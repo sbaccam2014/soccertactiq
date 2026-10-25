@@ -3,8 +3,15 @@ import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   plugins: [react(), tailwindcss()],
+  // Production builds are served by Django/whitenoise under /static/
+  // (see backend/README build step), so built asset URLs must live
+  // under that same prefix. index.html itself is served separately by
+  // bsa.views.spa_index at the site root, not through /static/. In dev
+  // (`vite`/`vite dev`), keep the default root base so Vite serves its
+  // own dev-server assets normally.
+  base: command === 'build' ? '/static/' : '/',
   server: {
     // Forward API + allauth headless + Django admin requests to the local
     // Django dev server so the browser only ever talks to one origin
@@ -30,4 +37,4 @@ export default defineConfig({
       },
     },
   },
-})
+}))

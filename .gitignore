@@ -5,6 +5,7 @@ backend/__pycache__/
 *.pyc
 backend/staticfiles/*
 !backend/staticfiles/.gitkeep
+backend/staticfiles_frontend/
 backend/media/
 *.sqlite3
 .env

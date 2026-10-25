@@ -223,10 +223,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # ---------------------------------------------------------------------------
 # In production, Django (via whitenoise) serves both the built React
-# frontend and /static/ (Django admin + DRF browsable API assets) from
-# this one directory. See bsa/urls.py for how the SPA's index.html is
-# served for non-/api/ non-/admin/ routes, and README.md for the
-# frontend build step that populates frontend/dist before collectstatic.
+# frontend's assets and /static/ (Django admin + DRF browsable API
+# assets) from this one directory. staticfiles_frontend/ is populated by
+# scripts/build.sh (copying frontend/dist/ there) — its index.html is
+# served separately at the site root by bsa.views.spa_index, not
+# through /static/; only its assets/ subdirectory is meant to be
+# reachable under /static/assets/, which Vite's base:'/static/' build
+# setting (see frontend/vite.config.ts) makes consistent with the
+# references baked into that index.html.
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [
