@@ -3,7 +3,8 @@ backend/.venv/
 backend/__pycache__/
 **/__pycache__/
 *.pyc
-backend/staticfiles/
+backend/staticfiles/*
+!backend/staticfiles/.gitkeep
 backend/media/
 *.sqlite3
 .env

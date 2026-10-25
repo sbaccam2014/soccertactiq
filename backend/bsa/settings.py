@@ -237,7 +237,16 @@ STORAGES = {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        # The manifest storage requires a manifest built by collectstatic
+        # (run as part of the production build — see README.md), which
+        # doesn't exist in local dev or in the test environment. Fall
+        # back to plain static storage there so `manage.py test` and
+        # `manage.py runserver` don't need collectstatic to have run.
+        "BACKEND": (
+            "whitenoise.storage.CompressedManifestStaticFilesStorage"
+            if not DEBUG
+            else "django.contrib.staticfiles.storage.StaticFilesStorage"
+        ),
     },
 }
 
