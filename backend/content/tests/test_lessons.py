@@ -91,3 +91,8 @@ class YoutubeUrlValidatorTests(APITestCase):
         from content.validators import validate_youtube_url
 
         validate_youtube_url("https://youtu.be/dQw4w9WgXcQ")
+
+    def test_accepts_shorts_url(self):
+        from content.validators import validate_youtube_url
+
+        validate_youtube_url("https://www.youtube.com/shorts/yx2w10P3yjc")

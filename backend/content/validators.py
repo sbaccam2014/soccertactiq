@@ -11,6 +11,7 @@ _YOUTUBE_HOST_PATTERNS = (
         r"^https://(www\.)?youtube\.com/watch\?v=[\w-]{6,}(&[\w.=&%-]*)?$"
     ),
     re.compile(r"^https://(www\.)?youtube\.com/embed/[\w-]{6,}(\?[\w.=&%-]*)?$"),
+    re.compile(r"^https://(www\.)?youtube\.com/shorts/[\w-]{6,}(\?[\w.=&%-]*)?$"),
     re.compile(r"^https://youtu\.be/[\w-]{6,}(\?[\w.=&%-]*)?$"),
     # Clearly-marked local placeholder, for seed/example content only.
     re.compile(r"^https://www\.youtube\.com/watch\?v=PLACEHOLDER$"),
@@ -25,7 +26,7 @@ def validate_youtube_url(value: str) -> None:
     """
     if not any(pattern.match(value) for pattern in _YOUTUBE_HOST_PATTERNS):
         raise ValidationError(
-            "Enter a standard youtube.com/watch, youtube.com/embed, or "
-            "youtu.be link.",
+            "Enter a standard youtube.com/watch, youtube.com/embed, "
+            "youtube.com/shorts, or youtu.be link.",
             code="invalid_youtube_url",
         )
