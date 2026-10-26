@@ -36,7 +36,7 @@ export function LoginPage() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center">
       <form onSubmit={handleSubmit} className="flex w-full max-w-xs flex-col gap-4" noValidate>
-        <h1 className="text-center text-2xl font-bold text-[var(--bsa-pitch-700)]">Log in</h1>
+        <h1 className="text-center text-2xl font-bold text-[var(--soccermind-pitch-700)]">Log in</h1>
 
         <TextField
           id="username"
@@ -57,7 +57,7 @@ export function LoginPage() {
         />
 
         {formError && (
-          <p role="alert" className="text-sm text-[var(--bsa-danger)]">
+          <p role="alert" className="text-sm text-[var(--soccermind-danger)]">
             {formError}
           </p>
         )}
@@ -66,9 +66,9 @@ export function LoginPage() {
           {isSubmitting ? 'Logging in…' : 'Log in'}
         </PrimaryButton>
 
-        <p className="text-center text-sm text-[var(--bsa-text-muted)]">
+        <p className="text-center text-sm text-[var(--soccermind-text-muted)]">
           New here?{' '}
-          <Link to="/register" className="font-semibold text-[var(--bsa-pitch-600)]">
+          <Link to="/register" className="font-semibold text-[var(--soccermind-pitch-600)]">
             Create an account
           </Link>
         </p>

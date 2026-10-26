@@ -67,10 +67,10 @@ export function RegisterPage() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center">
       <form onSubmit={handleSubmit} className="flex w-full max-w-xs flex-col gap-4" noValidate>
-        <h1 className="text-center text-2xl font-bold text-[var(--bsa-pitch-700)]">
+        <h1 className="text-center text-2xl font-bold text-[var(--soccermind-pitch-700)]">
           Create your account
         </h1>
-        <p className="text-center text-sm text-[var(--bsa-text-muted)]">
+        <p className="text-center text-sm text-[var(--soccermind-text-muted)]">
           Just a username and password — no email needed.
         </p>
 
@@ -105,7 +105,7 @@ export function RegisterPage() {
         />
 
         {formError && (
-          <p role="alert" className="text-sm text-[var(--bsa-danger)]">
+          <p role="alert" className="text-sm text-[var(--soccermind-danger)]">
             {formError}
           </p>
         )}
@@ -114,9 +114,9 @@ export function RegisterPage() {
           {isSubmitting ? 'Creating account…' : 'Create account'}
         </PrimaryButton>
 
-        <p className="text-center text-sm text-[var(--bsa-text-muted)]">
+        <p className="text-center text-sm text-[var(--soccermind-text-muted)]">
           Already have an account?{' '}
-          <Link to="/login" className="font-semibold text-[var(--bsa-pitch-600)]">
+          <Link to="/login" className="font-semibold text-[var(--soccermind-pitch-600)]">
             Log in
           </Link>
         </p>

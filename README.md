@@ -1,4 +1,4 @@
-# Baccam Soccer Academy (BSA)
+# SoccerMind
 
 A mobile-first youth soccer learning web app. Players watch a short
 YouTube clip, answer a few questions about reading the game (scanning,
@@ -43,13 +43,13 @@ brew services start postgresql@16
 ### 1. Clone and create the database
 
 ```bash
-git clone <your-fork-or-remote-url> baccam-soccer-academy
-cd baccam-soccer-academy
+git clone <your-fork-or-remote-url> soccermind
+cd soccermind
 
 # Create a local Postgres role + database for development.
 # (Adjust the password; it only needs to match backend/.env below.)
-psql postgres -c "CREATE ROLE bsa_dev WITH LOGIN PASSWORD 'bsa_dev_local_pw' CREATEDB;"
-psql postgres -c "CREATE DATABASE bsa_dev OWNER bsa_dev;"
+psql postgres -c "CREATE ROLE soccermind_dev WITH LOGIN PASSWORD 'soccermind_dev_local_pw' CREATEDB;"
+psql postgres -c "CREATE DATABASE soccermind_dev OWNER soccermind_dev;"
 ```
 
 ### 2. Backend
@@ -231,7 +231,7 @@ explicitly asks for identity verification rather than any automated
 
 ## API reference
 
-Base path for BSA's own endpoints: `/api/`. Registration/login/logout
+Base path for SoccerMind's own endpoints: `/api/`. Registration/login/logout
 are handled by django-allauth's **headless** API instead of custom
 endpoints, mounted separately at `/_allauth/browser/v1/`.
 
@@ -250,9 +250,9 @@ authenticated session; anonymous requests get 401/403.
 A GET to the session endpoint also sets the `csrftoken` cookie, which
 every subsequent non-GET request must echo back as the `X-CSRFToken`
 header (see `frontend/src/api/client.ts`). Registration and login are
-rate-limited server-side (`ACCOUNT_RATE_LIMITS` in `bsa/settings.py`).
+rate-limited server-side (`ACCOUNT_RATE_LIMITS` in `soccermind/settings.py`).
 
-### BSA API (`/api/`)
+### SoccerMind API (`/api/`)
 
 | Action | Method | Path | Notes |
 | --- | --- | --- | --- |
@@ -337,7 +337,7 @@ Railway/Nixpacks will pick up automatically if no explicit start
 command is set):
 
 ```bash
-cd backend && python manage.py migrate --noinput && gunicorn bsa.wsgi:application --bind 0.0.0.0:$PORT
+cd backend && python manage.py migrate --noinput && gunicorn soccermind.wsgi:application --bind 0.0.0.0:$PORT
 ```
 
 Running `migrate` at boot keeps this a one-command deploy for a single
@@ -351,13 +351,13 @@ every replica's boot command.
 | --- | --- |
 | `DJANGO_SECRET_KEY` | A long random string, generated once for this environment and not reused anywhere else |
 | `DJANGO_DEBUG` | `False` |
-| `DJANGO_ALLOWED_HOSTS` | Your Railway domain, e.g. `bsa-production.up.railway.app` (and any custom domain once attached) |
-| `DJANGO_CSRF_TRUSTED_ORIGINS` | `https://bsa-production.up.railway.app` (full origin, with scheme; add your custom domain too once attached) |
+| `DJANGO_ALLOWED_HOSTS` | Your Railway domain, e.g. `soccermind-production.up.railway.app` (and any custom domain once attached) |
+| `DJANGO_CSRF_TRUSTED_ORIGINS` | `https://soccermind-production.up.railway.app` (full origin, with scheme; add your custom domain too once attached) |
 | `DJANGO_SECURE_COOKIES` | `True` |
 | `DATABASE_URL` | Reference the Postgres service's connection variable (Railway lets you reference another service's variable directly, e.g. `${{Postgres.DATABASE_URL}}`) |
 
 Railway terminates TLS at its edge and forwards plain HTTP with an
-`X-Forwarded-Proto` header; `bsa/settings.py` already sets
+`X-Forwarded-Proto` header; `soccermind/settings.py` already sets
 `SECURE_PROXY_SSL_HEADER` accordingly whenever `DEBUG=False`, so Django
 correctly recognizes the original request as HTTPS (needed for secure
 cookies and `SECURE_SSL_REDIRECT` to behave correctly, rather than
@@ -398,10 +398,10 @@ backup/restore from your machine:
 
 ```bash
 # Backup (run against the DATABASE_URL Railway shows for the Postgres service)
-pg_dump "$DATABASE_URL" -Fc -f bsa_backup.dump
+pg_dump "$DATABASE_URL" -Fc -f soccermind_backup.dump
 
 # Restore into a (different or recreated) database
-pg_restore --clean --if-exists -d "$DATABASE_URL" bsa_backup.dump
+pg_restore --clean --if-exists -d "$DATABASE_URL" soccermind_backup.dump
 ```
 
 Treat any downloaded backup as containing real player data once this

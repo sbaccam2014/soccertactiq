@@ -34,13 +34,13 @@ export function AttemptResultPage() {
   return (
     <div className="flex flex-col gap-4">
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-[var(--bsa-pitch-700)]">
+        <h1 className="text-2xl font-bold text-[var(--soccermind-pitch-700)]">
           {attempt.lesson_title_snapshot}
         </h1>
-        <p className="mt-2 text-3xl font-bold text-[var(--bsa-pitch-500)]">
+        <p className="mt-2 text-3xl font-bold text-[var(--soccermind-pitch-500)]">
           {attempt.correct_count}/{attempt.question_count} correct
         </p>
-        <p className="text-sm text-[var(--bsa-text-muted)]">
+        <p className="text-sm text-[var(--soccermind-text-muted)]">
           Submitted {new Date(attempt.submitted_at).toLocaleString()}
         </p>
       </div>
@@ -48,27 +48,27 @@ export function AttemptResultPage() {
       <ul className="flex flex-col gap-3">
         {attempt.answers.map((answer, index) => (
           <li key={answer.question}>
-            <Card className={answer.is_correct ? '' : 'border-[var(--bsa-danger)]'}>
-              <p className="text-xs font-semibold text-[var(--bsa-text-muted)]">
+            <Card className={answer.is_correct ? '' : 'border-[var(--soccermind-danger)]'}>
+              <p className="text-xs font-semibold text-[var(--soccermind-text-muted)]">
                 Question {index + 1}
               </p>
-              <p className="mt-1 font-medium text-[var(--bsa-text)]">
+              <p className="mt-1 font-medium text-[var(--soccermind-text)]">
                 {answer.question_prompt_snapshot}
               </p>
               <p
                 className={`mt-2 text-sm font-semibold ${
-                  answer.is_correct ? 'text-[var(--bsa-success)]' : 'text-[var(--bsa-danger)]'
+                  answer.is_correct ? 'text-[var(--soccermind-success)]' : 'text-[var(--soccermind-danger)]'
                 }`}
               >
                 Your answer: {answer.selected_choice_text_snapshot}
                 {answer.is_correct ? ' — correct' : ' — not quite'}
               </p>
               {!answer.is_correct && (
-                <p className="mt-1 text-sm text-[var(--bsa-text)]">
+                <p className="mt-1 text-sm text-[var(--soccermind-text)]">
                   Correct answer: {answer.correct_choice_text_snapshot}
                 </p>
               )}
-              <p className="mt-2 text-sm text-[var(--bsa-text-muted)]">
+              <p className="mt-2 text-sm text-[var(--soccermind-text-muted)]">
                 {answer.question_explanation_snapshot}
               </p>
             </Card>

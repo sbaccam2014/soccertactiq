@@ -1,46 +1,46 @@
 @import 'tailwindcss';
 
 /*
- * Baccam Soccer Academy design tokens.
+ * SoccerMind design tokens.
  * Mobile-first: base font size is comfortable for a phone, large touch
  * targets throughout, visible focus rings for keyboard users.
  */
 :root {
-  --bsa-pitch-700: #0f3d2e;
-  --bsa-pitch-600: #15543f;
-  --bsa-pitch-500: #1d6e52;
-  --bsa-pitch-100: #e3f3ec;
-  --bsa-accent-500: #d97706;
-  --bsa-accent-600: #b45309;
-  --bsa-bg: #f8faf9;
-  --bsa-surface: #ffffff;
-  --bsa-text: #14241d;
-  --bsa-text-muted: #4b5f55;
-  --bsa-border: #d7e3dc;
-  --bsa-danger: #b42318;
-  --bsa-danger-bg: #fef3f2;
-  --bsa-success: #0f7a3d;
-  --bsa-success-bg: #ecfdf3;
+  --soccermind-pitch-700: #0f3d2e;
+  --soccermind-pitch-600: #15543f;
+  --soccermind-pitch-500: #1d6e52;
+  --soccermind-pitch-100: #e3f3ec;
+  --soccermind-accent-500: #d97706;
+  --soccermind-accent-600: #b45309;
+  --soccermind-bg: #f8faf9;
+  --soccermind-surface: #ffffff;
+  --soccermind-text: #14241d;
+  --soccermind-text-muted: #4b5f55;
+  --soccermind-border: #d7e3dc;
+  --soccermind-danger: #b42318;
+  --soccermind-danger-bg: #fef3f2;
+  --soccermind-success: #0f7a3d;
+  --soccermind-success-bg: #ecfdf3;
   color-scheme: light dark;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bsa-pitch-700: #bdeccf;
-    --bsa-pitch-600: #9fe0b9;
-    --bsa-pitch-500: #7bcf9e;
-    --bsa-pitch-100: #16302334;
-    --bsa-accent-500: #f59e0b;
-    --bsa-accent-600: #fbbf24;
-    --bsa-bg: #0d1512;
-    --bsa-surface: #141f1a;
-    --bsa-text: #eef5f1;
-    --bsa-text-muted: #9fb3a8;
-    --bsa-border: #27392f;
-    --bsa-danger: #f87171;
-    --bsa-danger-bg: #2a1413;
-    --bsa-success: #4ade80;
-    --bsa-success-bg: #10281a;
+    --soccermind-pitch-700: #bdeccf;
+    --soccermind-pitch-600: #9fe0b9;
+    --soccermind-pitch-500: #7bcf9e;
+    --soccermind-pitch-100: #16302334;
+    --soccermind-accent-500: #f59e0b;
+    --soccermind-accent-600: #fbbf24;
+    --soccermind-bg: #0d1512;
+    --soccermind-surface: #141f1a;
+    --soccermind-text: #eef5f1;
+    --soccermind-text-muted: #9fb3a8;
+    --soccermind-border: #27392f;
+    --soccermind-danger: #f87171;
+    --soccermind-danger-bg: #2a1413;
+    --soccermind-success: #4ade80;
+    --soccermind-success-bg: #10281a;
   }
 }
 
@@ -51,8 +51,8 @@ html {
 body {
   margin: 0;
   min-height: 100svh;
-  background: var(--bsa-bg);
-  color: var(--bsa-text);
+  background: var(--soccermind-bg);
+  color: var(--soccermind-text);
   font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
   font-size: 16px;
   line-height: 1.5;
@@ -66,7 +66,7 @@ body {
 
 /* Consistent, generous focus ring for keyboard navigation. */
 :focus-visible {
-  outline: 3px solid var(--bsa-accent-500);
+  outline: 3px solid var(--soccermind-accent-500);
   outline-offset: 2px;
   border-radius: 4px;
 }

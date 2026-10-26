@@ -12,10 +12,10 @@ export function LandingPage() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-6 text-center">
       <div>
-        <h1 className="text-3xl font-bold text-[var(--bsa-pitch-700)]">
-          Baccam Soccer Academy
+        <h1 className="text-3xl font-bold text-[var(--soccermind-pitch-700)]">
+          SoccerMind
         </h1>
-        <p className="mt-3 max-w-sm text-[var(--bsa-text-muted)]">
+        <p className="mt-3 max-w-sm text-[var(--soccermind-text-muted)]">
           Learn to read the game. Watch short video lessons, then answer
           questions about scanning, passing angles, movement off the
           ball, and supporting your teammates — with explanations that

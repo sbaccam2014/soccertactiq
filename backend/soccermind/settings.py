@@ -1,5 +1,5 @@
 """
-Django settings for the Baccam Soccer Academy (BSA) backend.
+Django settings for the SoccerMind backend.
 
 See backend/README section of the repo root README.md for local setup.
 For the full list of settings and their values, see
@@ -70,7 +70,7 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.headless",
-    # BSA apps
+    # SoccerMind apps
     "accounts",
     "content",
     "progress",
@@ -92,7 +92,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "bsa.urls"
+ROOT_URLCONF = "soccermind.urls"
 
 TEMPLATES = [
     {
@@ -109,7 +109,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "bsa.wsgi.application"
+WSGI_APPLICATION = "soccermind.wsgi.application"
 
 
 # ---------------------------------------------------------------------------
@@ -119,7 +119,7 @@ WSGI_APPLICATION = "bsa.wsgi.application"
 DATABASES = {
     "default": env.db(
         "DATABASE_URL",
-        default="postgresql://bsa_dev:bsa_dev_local_pw@127.0.0.1:5432/bsa_dev",
+        default="postgresql://soccermind_dev:soccermind_dev_local_pw@127.0.0.1:5432/soccermind_dev",
     )
 }
 
@@ -154,7 +154,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LOGIN_URL = "/admin/login/"
 
 # --- django-allauth: headless (API-only), username-only, no email required ---
-# BSA accounts are username + password only (brief: "unique username,
+# SoccerMind accounts are username + password only (brief: "unique username,
 # password, password confirmation. Email is optional"). Headless mode
 # means allauth never renders its own HTML pages — the SPA is the only
 # UI, talking to the JSON endpoints under /_allauth/browser/v1/.
@@ -226,7 +226,7 @@ USE_TZ = True
 # frontend's assets and /static/ (Django admin + DRF browsable API
 # assets) from this one directory. staticfiles_frontend/ is populated by
 # scripts/build.sh (copying frontend/dist/ there) — its index.html is
-# served separately at the site root by bsa.views.spa_index, not
+# served separately at the site root by soccermind.views.spa_index, not
 # through /static/; only its assets/ subdirectory is meant to be
 # reachable under /static/assets/, which Vite's base:'/static/' build
 # setting (see frontend/vite.config.ts) makes consistent with the

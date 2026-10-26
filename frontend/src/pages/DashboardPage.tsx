@@ -32,7 +32,7 @@ export function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-bold text-[var(--bsa-pitch-700)]">Lessons</h1>
+      <h1 className="text-2xl font-bold text-[var(--soccermind-pitch-700)]">Lessons</h1>
 
       {lessons.length === 0 ? (
         <EmptyState>No lessons are published yet. Check back soon.</EmptyState>
@@ -44,8 +44,8 @@ export function DashboardPage() {
                 <Card className="transition active:scale-[0.99]">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <h2 className="font-semibold text-[var(--bsa-text)]">{lesson.title}</h2>
-                      <p className="mt-1 text-sm text-[var(--bsa-text-muted)]">
+                      <h2 className="font-semibold text-[var(--soccermind-text)]">{lesson.title}</h2>
+                      <p className="mt-1 text-sm text-[var(--soccermind-text-muted)]">
                         {lesson.description}
                       </p>
                     </div>
@@ -64,13 +64,13 @@ export function DashboardPage() {
 function LessonStatusBadge({ lesson }: { lesson: LessonListItem }) {
   if (!lesson.is_completed) {
     return (
-      <span className="shrink-0 rounded-full bg-[var(--bsa-pitch-100)] px-2.5 py-1 text-xs font-semibold text-[var(--bsa-pitch-700)]">
+      <span className="shrink-0 rounded-full bg-[var(--soccermind-pitch-100)] px-2.5 py-1 text-xs font-semibold text-[var(--soccermind-pitch-700)]">
         New
       </span>
     );
   }
   return (
-    <span className="shrink-0 rounded-full bg-[var(--bsa-success-bg)] px-2.5 py-1 text-xs font-semibold text-[var(--bsa-success)]">
+    <span className="shrink-0 rounded-full bg-[var(--soccermind-success-bg)] px-2.5 py-1 text-xs font-semibold text-[var(--soccermind-success)]">
       {Math.round(Number(lesson.latest_score))}%
     </span>
   );
