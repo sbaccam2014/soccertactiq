@@ -7,7 +7,10 @@ export function AppLayout() {
   return (
     <div className="flex min-h-svh flex-col">
       <header className="sticky top-0 z-10 flex items-center justify-between border-b border-[var(--soccermind-border)] bg-[var(--soccermind-surface)] px-4 py-3">
-        <span className="text-lg font-bold text-[var(--soccermind-pitch-700)]">SoccerMind</span>
+        <span className="flex items-center gap-2">
+          <img src="/logo-icon.png" alt="" className="h-8 w-8 rounded-md" />
+          <span className="text-lg font-bold text-[var(--soccermind-pitch-700)]">SoccerMind</span>
+        </span>
         {user && (
           <button
             onClick={() => logout()}

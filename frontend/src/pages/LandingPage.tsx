@@ -12,7 +12,12 @@ export function LandingPage() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-6 text-center">
       <div>
-        <h1 className="text-3xl font-bold text-[var(--soccermind-pitch-700)]">
+        <img
+          src="/logo.png"
+          alt=""
+          className="mx-auto h-32 w-32 rounded-2xl shadow-sm"
+        />
+        <h1 className="mt-4 text-3xl font-bold text-[var(--soccermind-pitch-700)]">
           SoccerMind
         </h1>
         <p className="mt-3 max-w-sm text-[var(--soccermind-text-muted)]">
