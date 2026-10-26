@@ -117,3 +117,58 @@ class AnswerChoice(models.Model):
 
     def __str__(self) -> str:
         return self.text
+
+
+class PositionVideo(models.Model):
+    """
+    A simple, unscored reference video for a specific playing position —
+    distinct from Lesson, which is a full quiz-based lesson. No
+    questions, no attempts, no scoring: just a title, an ordinary
+    YouTube link, and an optional description, organized by position so
+    players can browse "videos for my position."
+    """
+
+    class Position(models.TextChoices):
+        FULLBACK = "fullback", "Fullback"
+        MIDFIELDER = "midfielder", "Midfielder"
+        FORWARD = "forward", "Forward"
+
+    class Status(models.TextChoices):
+        DRAFT = "draft", "Draft"
+        PUBLISHED = "published", "Published"
+        UNAVAILABLE = "unavailable", "Unavailable"
+
+    title = models.CharField(max_length=200)
+    position = models.CharField(max_length=20, choices=Position.choices)
+    description = models.TextField(
+        blank=True, help_text="Optional short note shown with the link."
+    )
+    video_url = models.URLField(
+        "YouTube URL",
+        max_length=500,
+        validators=[validate_youtube_url],
+        help_text="An ordinary youtube.com/watch, youtube.com/embed, or "
+        "youtu.be link.",
+    )
+    video_start_seconds = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text="Optional: where players should start watching.",
+    )
+    status = models.CharField(
+        max_length=20, choices=Status.choices, default=Status.DRAFT
+    )
+    is_placeholder_video = models.BooleanField(
+        default=False,
+        help_text="Mark on if video_url is a placeholder rather than a "
+        "reviewed, real video.",
+    )
+    display_order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["position", "display_order", "-created_at"]
+
+    def __str__(self) -> str:
+        return f"{self.get_position_display()} — {self.title}"

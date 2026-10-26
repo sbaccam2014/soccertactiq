@@ -9,4 +9,9 @@ urlpatterns = [
         views.PublishedLessonDetailView.as_view(),
         name="lesson-detail",
     ),
+    path(
+        "position-videos/",
+        views.PositionVideoListView.as_view(),
+        name="position-video-list",
+    ),
 ]

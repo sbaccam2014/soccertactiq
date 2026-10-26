@@ -102,3 +102,48 @@ class LessonAdminPublishTests(TestCase):
         self.client.login(username="regular", password="x")
         response = self.client.get("/admin/", follow=True)
         self.assertNotContains(response, "Site administration")
+
+
+class PositionVideoAdminPublishTests(TestCase):
+    """Covers the position-video library's admin publish/unpublish actions."""
+
+    def setUp(self):
+        self.staff = User.objects.create_superuser(username="pvstaffuser", password="x")
+        self.client.force_login(self.staff)
+
+    def _make_video(self):
+        from content.models import PositionVideo
+
+        return PositionVideo.objects.create(
+            title="Admin Test Video",
+            position=PositionVideo.Position.FORWARD,
+            video_url="https://www.youtube.com/watch?v=PLACEHOLDER",
+            is_placeholder_video=True,
+            status=PositionVideo.Status.DRAFT,
+        )
+
+    def test_publish_action_publishes_video(self):
+        from content.models import PositionVideo
+
+        video = self._make_video()
+        changelist_url = reverse("admin:content_positionvideo_changelist")
+        self.client.post(
+            changelist_url,
+            {"action": "publish_videos", "_selected_action": [str(video.pk)]},
+        )
+        video.refresh_from_db()
+        self.assertEqual(video.status, PositionVideo.Status.PUBLISHED)
+
+    def test_unpublish_action(self):
+        from content.models import PositionVideo
+
+        video = self._make_video()
+        video.status = PositionVideo.Status.PUBLISHED
+        video.save()
+        changelist_url = reverse("admin:content_positionvideo_changelist")
+        self.client.post(
+            changelist_url,
+            {"action": "unpublish_videos", "_selected_action": [str(video.pk)]},
+        )
+        video.refresh_from_db()
+        self.assertEqual(video.status, PositionVideo.Status.DRAFT)

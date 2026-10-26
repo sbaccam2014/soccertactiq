@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import AnswerChoice, Lesson, Question
+from .models import AnswerChoice, Lesson, PositionVideo, Question
 
 
 class AnswerChoicePublicSerializer(serializers.ModelSerializer):
@@ -80,4 +80,20 @@ class LessonDetailSerializer(serializers.ModelSerializer):
             "video_end_seconds",
             "status",
             "questions",
+        ]
+
+
+class PositionVideoSerializer(serializers.ModelSerializer):
+    """Public shape for the position video library — no admin-only fields."""
+
+    class Meta:
+        model = PositionVideo
+        fields = [
+            "id",
+            "title",
+            "position",
+            "description",
+            "video_url",
+            "video_start_seconds",
+            "display_order",
         ]

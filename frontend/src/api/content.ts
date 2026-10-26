@@ -6,6 +6,8 @@ import type {
   LessonDetail,
   LessonListItem,
   Paginated,
+  Position,
+  PositionVideo,
 } from '../types';
 
 export async function fetchLessons(): Promise<Paginated<LessonListItem>> {
@@ -33,4 +35,12 @@ export async function fetchAttempt(id: number): Promise<AttemptResult> {
 
 export async function fetchProgress(): Promise<Paginated<AttemptSummary>> {
   return api.get<Paginated<AttemptSummary>>('/api/progress/');
+}
+
+
+export async function fetchPositionVideos(
+  position?: Position,
+): Promise<Paginated<PositionVideo>> {
+  const query = position ? `?position=${position}` : '';
+  return api.get<Paginated<PositionVideo>>(`/api/position-videos/${query}`);
 }

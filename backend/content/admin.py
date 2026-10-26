@@ -2,7 +2,7 @@ from django import forms
 from django.contrib import admin, messages
 from django.utils.html import format_html
 
-from .models import AnswerChoice, Lesson, Question
+from .models import AnswerChoice, Lesson, PositionVideo, Question
 
 
 class AnswerChoiceInline(admin.TabularInline):
@@ -160,3 +160,54 @@ class LessonAdmin(admin.ModelAdmin):
             f"Marked {count} lesson(s) unavailable. Historic attempts are "
             "preserved.",
         )
+
+
+@admin.register(PositionVideo)
+class PositionVideoAdmin(admin.ModelAdmin):
+    """
+    A lightweight library of reference videos organized by playing
+    position (fullback / midfielder / forward) — separate from the
+    quiz-based Lessons above. No questions, no scoring; just a curated
+    set of links players can browse by their position.
+    """
+
+    list_display = (
+        "title",
+        "position",
+        "status",
+        "is_placeholder_video",
+        "display_order",
+        "updated_at",
+    )
+    list_filter = ("position", "status", "is_placeholder_video")
+    search_fields = ("title", "description")
+    actions = ["publish_videos", "unpublish_videos", "mark_unavailable"]
+    fieldsets = (
+        (None, {"fields": ("title", "position", "description", "display_order")}),
+        (
+            "Video",
+            {
+                "fields": (
+                    "video_url",
+                    "video_start_seconds",
+                    "is_placeholder_video",
+                )
+            },
+        ),
+        ("Publishing", {"fields": ("status",)}),
+    )
+
+    @admin.action(description="Publish selected videos")
+    def publish_videos(self, request, queryset):
+        count = queryset.update(status=PositionVideo.Status.PUBLISHED)
+        self.message_user(request, f"Published {count} video(s).", level=messages.SUCCESS)
+
+    @admin.action(description="Unpublish selected videos (back to draft)")
+    def unpublish_videos(self, request, queryset):
+        count = queryset.update(status=PositionVideo.Status.DRAFT)
+        self.message_user(request, f"Unpublished {count} video(s).")
+
+    @admin.action(description="Mark selected videos unavailable")
+    def mark_unavailable(self, request, queryset):
+        count = queryset.update(status=PositionVideo.Status.UNAVAILABLE)
+        self.message_user(request, f"Marked {count} video(s) unavailable.")

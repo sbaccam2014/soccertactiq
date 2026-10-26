@@ -9,6 +9,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { LessonPage } from './pages/LessonPage';
 import { AttemptResultPage } from './pages/AttemptResultPage';
 import { ProgressPage } from './pages/ProgressPage';
+import { PositionsPage } from './pages/PositionsPage';
 
 export default function App() {
   return (
@@ -47,6 +48,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <ProgressPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="positions"
+            element={
+              <ProtectedRoute>
+                <PositionsPage />
               </ProtectedRoute>
             }
           />

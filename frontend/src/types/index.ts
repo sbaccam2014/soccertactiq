@@ -83,3 +83,16 @@ export interface AnswerSubmission {
   question_id: number;
   choice_id: number;
 }
+
+
+export type Position = 'fullback' | 'midfielder' | 'forward';
+
+export interface PositionVideo {
+  id: number;
+  title: string;
+  position: Position;
+  description: string;
+  video_url: string;
+  video_start_seconds: number | null;
+  display_order: number;
+}

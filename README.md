@@ -186,12 +186,34 @@ questions**.
    available yet. Either way, players' existing results for that lesson
    remain intact and accurate.
 
+### Position video library (Fullback / Midfielder / Forward)
+
+Separate from the quiz-based Lessons above, **Lessons & questions →
+Position videos** in admin is a lightweight, unscored library of
+reference clips organized by playing position. No questions, no
+attempts, no scoring — just a title, an optional short description, and
+a YouTube link, tagged `Fullback`, `Midfielder`, or `Forward`.
+
+1. **Add a video** (Position videos → Add position video): title,
+   position, optional description, YouTube URL (same allowlist as
+   lessons — see "YouTube links" below), optional start timestamp, and
+   a display order for sorting within a position. Starts as **Draft**.
+2. **Publish / unpublish / mark unavailable**: same list-action pattern
+   as Lessons — select videos in the list view and choose "Publish
+   selected videos," "Unpublish selected videos," or "Mark selected
+   videos unavailable." Unlike Lessons there's no choices/questions to
+   validate, so publishing here has no extra prerequisites.
+3. **Player view**: logged-in players see a **By Position** tab in the
+   app with Fullback / Midfielder / Forward sub-tabs, listing each
+   position's published videos as plain "Watch on YouTube" links —
+   `GET /api/position-videos/?position=<fullback|midfielder|forward>`.
+
 ### YouTube links
 
-- Only plain `youtube.com/watch?v=...`, `youtube.com/embed/...`, and
-  `youtu.be/...` URLs are accepted (enforced by
-  `content.validators.validate_youtube_url`); anything else is rejected
-  at save time in admin.
+- Only plain `youtube.com/watch?v=...`, `youtube.com/embed/...`,
+  `youtube.com/shorts/...`, and `youtu.be/...` URLs are accepted
+  (enforced by `content.validators.validate_youtube_url`); anything
+  else is rejected at save time in admin.
 - The backend **never fetches** the URL — it's stored and handed to the
   player as an ordinary link that opens in a new tab, exactly as
   entered (with a `?t=` timestamp appended if a start time is set). No
@@ -262,6 +284,7 @@ rate-limited server-side (`ACCOUNT_RATE_LIMITS` in `soccertactiq/settings.py`).
 | Submit an attempt | POST | `/api/lessons/<id>/attempts/` | body `{"idempotency_key", "answers": [{"question_id", "choice_id"}, ...]}`; scores server-side, writes atomically, returns the full result (including explanations); a repeated request with the same `idempotency_key` returns the original result instead of creating a duplicate |
 | Attempt detail | GET | `/api/attempts/<id>/` | only the owning player can retrieve it (404, not 403, for anyone else) |
 | My progress | GET | `/api/progress/` | paginated list of the current player's past attempts, most recent first |
+| Position video library | GET | `/api/position-videos/` | paginated; optional `?position=` filter (`fullback`, `midfielder`, or `forward`); published only |
 
 ## Data model notes
 

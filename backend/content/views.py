@@ -3,8 +3,12 @@ from rest_framework import generics, permissions
 
 from progress.models import Attempt
 
-from .models import Lesson
-from .serializers import LessonDetailSerializer, LessonListSerializer
+from .models import Lesson, PositionVideo
+from .serializers import (
+    LessonDetailSerializer,
+    LessonListSerializer,
+    PositionVideoSerializer,
+)
 
 
 class PublishedLessonListView(generics.ListAPIView):
@@ -47,3 +51,24 @@ class PublishedLessonDetailView(generics.RetrieveAPIView):
     serializer_class = LessonDetailSerializer
     permission_classes = [permissions.IsAuthenticated]
     queryset = Lesson.objects.filter(status=Lesson.Status.PUBLISHED)
+
+
+class PositionVideoListView(generics.ListAPIView):
+    """
+    GET /api/position-videos/ — published position-reference videos,
+    optionally filtered to one position via ?position=fullback (valid
+    values: fullback, midfielder, forward). No scoring/attempts attached
+    — this is a simple browsable library, not a lesson.
+    """
+
+    serializer_class = PositionVideoSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = PositionVideo.objects.filter(
+            status=PositionVideo.Status.PUBLISHED
+        )
+        position = self.request.query_params.get("position")
+        if position:
+            queryset = queryset.filter(position=position)
+        return queryset
