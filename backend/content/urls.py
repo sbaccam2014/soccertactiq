@@ -10,8 +10,13 @@ urlpatterns = [
         name="lesson-detail",
     ),
     path(
-        "position-videos/",
-        views.PositionVideoListView.as_view(),
-        name="position-video-list",
+        "category-videos/",
+        views.CategoryVideoListView.as_view(),
+        name="category-video-list",
+    ),
+    path(
+        "video-categories/",
+        views.VideoCategoryListView.as_view(),
+        name="video-category-list",
     ),
 ]

@@ -9,7 +9,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { LessonPage } from './pages/LessonPage';
 import { AttemptResultPage } from './pages/AttemptResultPage';
 import { ProgressPage } from './pages/ProgressPage';
-import { PositionsPage } from './pages/PositionsPage';
+import { VideoLibraryPage } from './pages/VideoLibraryPage';
 
 export default function App() {
   return (
@@ -52,10 +52,10 @@ export default function App() {
             }
           />
           <Route
-            path="positions"
+            path="videos"
             element={
               <ProtectedRoute>
-                <PositionsPage />
+                <VideoLibraryPage />
               </ProtectedRoute>
             }
           />

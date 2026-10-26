@@ -1,13 +1,15 @@
 from django.db.models import OuterRef, Subquery
 from rest_framework import generics, permissions
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from progress.models import Attempt
 
-from .models import Lesson, PositionVideo
+from .models import CategoryVideo, Lesson
 from .serializers import (
+    CategoryVideoSerializer,
     LessonDetailSerializer,
     LessonListSerializer,
-    PositionVideoSerializer,
 )
 
 
@@ -53,22 +55,45 @@ class PublishedLessonDetailView(generics.RetrieveAPIView):
     queryset = Lesson.objects.filter(status=Lesson.Status.PUBLISHED)
 
 
-class PositionVideoListView(generics.ListAPIView):
+class CategoryVideoListView(generics.ListAPIView):
     """
-    GET /api/position-videos/ — published position-reference videos,
-    optionally filtered to one position via ?position=fullback (valid
-    values: fullback, midfielder, forward). No scoring/attempts attached
-    — this is a simple browsable library, not a lesson.
+    GET /api/category-videos/ — published category-reference videos,
+    optionally filtered to one category via ?category=Defense (exact,
+    case-sensitive match — see VideoCategoryListView for the set of
+    categories that currently have at least one published video). No
+    scoring/attempts attached — this is a simple browsable library, not
+    a lesson.
     """
 
-    serializer_class = PositionVideoSerializer
+    serializer_class = CategoryVideoSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        queryset = PositionVideo.objects.filter(
-            status=PositionVideo.Status.PUBLISHED
+        queryset = CategoryVideo.objects.filter(
+            status=CategoryVideo.Status.PUBLISHED
         )
-        position = self.request.query_params.get("position")
-        if position:
-            queryset = queryset.filter(position=position)
+        category = self.request.query_params.get("category")
+        if category:
+            queryset = queryset.filter(category=category)
         return queryset
+
+
+class VideoCategoryListView(APIView):
+    """
+    GET /api/video-categories/ — the distinct list of categories that
+    currently have at least one published video, in display order. Lets
+    the frontend render category tabs dynamically instead of hardcoding
+    a fixed list, so a new category an admin adds in Django admin shows
+    up in the app automatically.
+    """
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        categories = list(
+            CategoryVideo.objects.filter(status=CategoryVideo.Status.PUBLISHED)
+            .order_by("category")
+            .values_list("category", flat=True)
+            .distinct()
+        )
+        return Response(categories)

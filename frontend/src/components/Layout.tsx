@@ -31,7 +31,7 @@ export function AppLayout() {
           className="sticky bottom-0 z-10 flex border-t border-[var(--soccertactiq-border)] bg-[var(--soccertactiq-surface)]"
         >
           <NavTab to="/dashboard" label="Lessons" />
-          <NavTab to="/positions" label="By Position" />
+          <NavTab to="/videos" label="Video Library" />
           <NavTab to="/progress" label="My Progress" />
         </nav>
       )}

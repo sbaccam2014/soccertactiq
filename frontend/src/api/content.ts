@@ -3,11 +3,10 @@ import type {
   AnswerSubmission,
   AttemptResult,
   AttemptSummary,
+  CategoryVideo,
   LessonDetail,
   LessonListItem,
   Paginated,
-  Position,
-  PositionVideo,
 } from '../types';
 
 export async function fetchLessons(): Promise<Paginated<LessonListItem>> {
@@ -38,9 +37,13 @@ export async function fetchProgress(): Promise<Paginated<AttemptSummary>> {
 }
 
 
-export async function fetchPositionVideos(
-  position?: Position,
-): Promise<Paginated<PositionVideo>> {
-  const query = position ? `?position=${position}` : '';
-  return api.get<Paginated<PositionVideo>>(`/api/position-videos/${query}`);
+export async function fetchVideoCategories(): Promise<string[]> {
+  return api.get<string[]>('/api/video-categories/');
+}
+
+export async function fetchCategoryVideos(
+  category?: string,
+): Promise<Paginated<CategoryVideo>> {
+  const query = category ? `?category=${encodeURIComponent(category)}` : '';
+  return api.get<Paginated<CategoryVideo>>(`/api/category-videos/${query}`);
 }

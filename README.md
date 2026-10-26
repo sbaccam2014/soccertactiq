@@ -186,27 +186,35 @@ questions**.
    available yet. Either way, players' existing results for that lesson
    remain intact and accurate.
 
-### Position video library (Fullback / Midfielder / Forward)
+### Category video library (Defense, Midfield, Forward, Work Ethics, Drills, …)
 
 Separate from the quiz-based Lessons above, **Lessons & questions →
-Position videos** in admin is a lightweight, unscored library of
-reference clips organized by playing position. No questions, no
-attempts, no scoring — just a title, an optional short description, and
-a YouTube link, tagged `Fullback`, `Midfielder`, or `Forward`.
+Category videos** in admin is a lightweight, unscored library of
+reference clips organized by a free-text category. No questions, no
+attempts, no scoring — just a title, an optional short description, a
+YouTube link, and a category name you choose (e.g. "Defense",
+"Midfield", "Forward", "Work Ethics", "Drills" — any text, not a fixed
+list, so new categories need no code change).
 
-1. **Add a video** (Position videos → Add position video): title,
-   position, optional description, YouTube URL (same allowlist as
-   lessons — see "YouTube links" below), optional start timestamp, and
-   a display order for sorting within a position. Starts as **Draft**.
+1. **Add a video** (Category videos → Add category video): title,
+   category (free text — the list filter on the Category videos list
+   view shows every category name already in use, so reuse existing
+   spelling/casing rather than creating a near-duplicate like
+   "defense" vs "Defense"), optional description, YouTube URL (same
+   allowlist as lessons — see "YouTube links" below), optional start
+   timestamp, and a display order for sorting within the category.
+   Starts as **Draft**.
 2. **Publish / unpublish / mark unavailable**: same list-action pattern
    as Lessons — select videos in the list view and choose "Publish
    selected videos," "Unpublish selected videos," or "Mark selected
    videos unavailable." Unlike Lessons there's no choices/questions to
    validate, so publishing here has no extra prerequisites.
-3. **Player view**: logged-in players see a **By Position** tab in the
-   app with Fullback / Midfielder / Forward sub-tabs, listing each
-   position's published videos as plain "Watch on YouTube" links —
-   `GET /api/position-videos/?position=<fullback|midfielder|forward>`.
+3. **Player view**: logged-in players see a **Video Library** tab in
+   the app with one sub-tab per category that currently has at least
+   one published video (`GET /api/video-categories/` drives the tab
+   list, so it updates automatically as categories are added), listing
+   that category's published videos as plain "Watch on YouTube" links
+   — `GET /api/category-videos/?category=<name>`.
 
 ### YouTube links
 
@@ -284,7 +292,8 @@ rate-limited server-side (`ACCOUNT_RATE_LIMITS` in `soccertactiq/settings.py`).
 | Submit an attempt | POST | `/api/lessons/<id>/attempts/` | body `{"idempotency_key", "answers": [{"question_id", "choice_id"}, ...]}`; scores server-side, writes atomically, returns the full result (including explanations); a repeated request with the same `idempotency_key` returns the original result instead of creating a duplicate |
 | Attempt detail | GET | `/api/attempts/<id>/` | only the owning player can retrieve it (404, not 403, for anyone else) |
 | My progress | GET | `/api/progress/` | paginated list of the current player's past attempts, most recent first |
-| Position video library | GET | `/api/position-videos/` | paginated; optional `?position=` filter (`fullback`, `midfielder`, or `forward`); published only |
+| Video categories | GET | `/api/video-categories/` | distinct list of category names with at least one published video |
+| Category video library | GET | `/api/category-videos/` | paginated; optional `?category=<name>` filter (exact match); published only |
 
 ## Data model notes
 

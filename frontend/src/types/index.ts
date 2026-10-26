@@ -85,12 +85,10 @@ export interface AnswerSubmission {
 }
 
 
-export type Position = 'fullback' | 'midfielder' | 'forward';
-
-export interface PositionVideo {
+export interface CategoryVideo {
   id: number;
   title: string;
-  position: Position;
+  category: string;
   description: string;
   video_url: string;
   video_start_seconds: number | null;

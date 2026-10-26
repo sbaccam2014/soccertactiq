@@ -119,19 +119,18 @@ class AnswerChoice(models.Model):
         return self.text
 
 
-class PositionVideo(models.Model):
+class CategoryVideo(models.Model):
     """
-    A simple, unscored reference video for a specific playing position —
-    distinct from Lesson, which is a full quiz-based lesson. No
-    questions, no attempts, no scoring: just a title, an ordinary
-    YouTube link, and an optional description, organized by position so
-    players can browse "videos for my position."
+    A simple, unscored reference video filed under a free-text category
+    (e.g. "Defense", "Midfield", "Work Ethics", "Drills") — distinct
+    from Lesson, which is a full quiz-based lesson. No questions, no
+    attempts, no scoring: just a title, an ordinary YouTube link, and an
+    optional description, organized by category so players can browse
+    by topic. Category is free text rather than a fixed choice list so
+    new categories can be added from admin without a code change —
+    existing category names show up as suggestions on the add/edit
+    form via Select2's `list=` datalist, but any value is accepted.
     """
-
-    class Position(models.TextChoices):
-        FULLBACK = "fullback", "Fullback"
-        MIDFIELDER = "midfielder", "Midfielder"
-        FORWARD = "forward", "Forward"
 
     class Status(models.TextChoices):
         DRAFT = "draft", "Draft"
@@ -139,7 +138,13 @@ class PositionVideo(models.Model):
         UNAVAILABLE = "unavailable", "Unavailable"
 
     title = models.CharField(max_length=200)
-    position = models.CharField(max_length=20, choices=Position.choices)
+    category = models.CharField(
+        max_length=50,
+        help_text='Free-text category, e.g. "Defense", "Midfield", '
+        '"Work Ethics", "Drills". Matched exactly (case-sensitive) when '
+        "players filter by category, so reuse existing spelling/casing "
+        "for a category rather than creating near-duplicates.",
+    )
     description = models.TextField(
         blank=True, help_text="Optional short note shown with the link."
     )
@@ -147,8 +152,8 @@ class PositionVideo(models.Model):
         "YouTube URL",
         max_length=500,
         validators=[validate_youtube_url],
-        help_text="An ordinary youtube.com/watch, youtube.com/embed, or "
-        "youtu.be link.",
+        help_text="An ordinary youtube.com/watch, youtube.com/embed, "
+        "youtube.com/shorts, or youtu.be link.",
     )
     video_start_seconds = models.PositiveIntegerField(
         null=True,
@@ -168,7 +173,7 @@ class PositionVideo(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ["position", "display_order", "-created_at"]
+        ordering = ["category", "display_order", "-created_at"]
 
     def __str__(self) -> str:
-        return f"{self.get_position_display()} — {self.title}"
+        return f"{self.category} — {self.title}"

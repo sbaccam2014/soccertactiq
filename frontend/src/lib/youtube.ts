@@ -3,7 +3,7 @@
  * start-time query param when specified. We only ever open the
  * official youtube.com/youtu.be link in a new tab — never embed,
  * fetch, or proxy the video ourselves. Works for both full Lessons and
- * the simpler PositionVideo library, which share this video_url +
+ * the simpler CategoryVideo library, which share this video_url +
  * video_start_seconds shape.
  */
 export function buildYoutubeLink(video: {

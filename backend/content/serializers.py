@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import AnswerChoice, Lesson, PositionVideo, Question
+from .models import AnswerChoice, CategoryVideo, Lesson, Question
 
 
 class AnswerChoicePublicSerializer(serializers.ModelSerializer):
@@ -83,15 +83,15 @@ class LessonDetailSerializer(serializers.ModelSerializer):
         ]
 
 
-class PositionVideoSerializer(serializers.ModelSerializer):
-    """Public shape for the position video library — no admin-only fields."""
+class CategoryVideoSerializer(serializers.ModelSerializer):
+    """Public shape for the category video library — no admin-only fields."""
 
     class Meta:
-        model = PositionVideo
+        model = CategoryVideo
         fields = [
             "id",
             "title",
-            "position",
+            "category",
             "description",
             "video_url",
             "video_start_seconds",
