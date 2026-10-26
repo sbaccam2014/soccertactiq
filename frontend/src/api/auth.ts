@@ -4,7 +4,7 @@ import type { CurrentUser } from '../types';
 /**
  * Registration/login/logout go straight to django-allauth's headless
  * browser-client API rather than a custom /api/ route, per the backend
- * design (see backend/soccermind/urls.py). /api/auth/me/ is our own thin
+ * design (see backend/soccertactiq/urls.py). /api/auth/me/ is our own thin
  * convenience endpoint for "who is logged in right now".
  */
 

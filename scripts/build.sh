@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Production build: compiles the React frontend and places its output
-# where Django expects to find it (see backend/soccermind/settings.py
-# STATICFILES_DIRS and backend/soccermind/views.py spa_index), then runs
+# where Django expects to find it (see backend/soccertactiq/settings.py
+# STATICFILES_DIRS and backend/soccertactiq/views.py spa_index), then runs
 # collectstatic. Run this from the repo root before deploying, and as
 # part of the Railway build command (see README.md "Deploying to
 # Railway").

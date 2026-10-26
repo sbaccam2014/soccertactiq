@@ -33,7 +33,7 @@ class User(AbstractUser):
 
 class PlayerProfile(models.Model):
     """
-    A player's profile within SoccerMind. Separated from User now so that, later,
+    A player's profile within SoccerTactiq. Separated from User now so that, later,
     a parent/coach account can own one or more player profiles without a
     disruptive migration. For this version each User has exactly one
     PlayerProfile, created automatically at registration.

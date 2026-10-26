@@ -8,7 +8,7 @@ export default defineConfig(({ command }) => ({
   // Production builds are served by Django/whitenoise under /static/
   // (see backend/README build step), so built asset URLs must live
   // under that same prefix. index.html itself is served separately by
-  // soccermind.views.spa_index at the site root, not through /static/. In dev
+  // soccertactiq.views.spa_index at the site root, not through /static/. In dev
   // (`vite`/`vite dev`), keep the default root base so Vite serves its
   // own dev-server assets normally.
   base: command === 'build' ? '/static/' : '/',

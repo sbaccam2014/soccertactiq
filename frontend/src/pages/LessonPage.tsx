@@ -90,14 +90,14 @@ export function LessonPage() {
   if (questionIndex === -1) {
     return (
       <div className="flex flex-col gap-4">
-        <h1 className="text-2xl font-bold text-[var(--soccermind-pitch-700)]">{lesson.title}</h1>
-        <p className="text-[var(--soccermind-text)]">{lesson.description}</p>
+        <h1 className="text-2xl font-bold text-[var(--soccertactiq-pitch-700)]">{lesson.title}</h1>
+        <p className="text-[var(--soccertactiq-text)]">{lesson.description}</p>
 
-        <div className="rounded-lg bg-[var(--soccermind-pitch-100)] p-3">
-          <h2 className="text-sm font-semibold text-[var(--soccermind-pitch-700)]">
+        <div className="rounded-lg bg-[var(--soccertactiq-pitch-100)] p-3">
+          <h2 className="text-sm font-semibold text-[var(--soccertactiq-pitch-700)]">
             What you're learning
           </h2>
-          <p className="mt-1 text-sm text-[var(--soccermind-text)]">{lesson.learning_objective}</p>
+          <p className="mt-1 text-sm text-[var(--soccertactiq-text)]">{lesson.learning_objective}</p>
         </div>
 
         <a
@@ -105,15 +105,15 @@ export function LessonPage() {
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => setHasOpenedVideo(true)}
-          className="min-h-11 flex items-center justify-center rounded-lg border-2 border-[var(--soccermind-pitch-500)] px-4 py-3 text-center font-semibold text-[var(--soccermind-pitch-600)]"
+          className="min-h-11 flex items-center justify-center rounded-lg border-2 border-[var(--soccertactiq-pitch-500)] px-4 py-3 text-center font-semibold text-[var(--soccertactiq-pitch-600)]"
         >
           Watch the video on YouTube ↗
         </a>
         {timestampGuidance && (
-          <p className="text-center text-sm text-[var(--soccermind-text-muted)]">{timestampGuidance}</p>
+          <p className="text-center text-sm text-[var(--soccertactiq-text-muted)]">{timestampGuidance}</p>
         )}
         {!hasOpenedVideo && (
-          <p className="text-center text-sm text-[var(--soccermind-text-muted)]">
+          <p className="text-center text-sm text-[var(--soccertactiq-text-muted)]">
             Watch the video before answering — the questions assume you have.
           </p>
         )}
@@ -129,13 +129,13 @@ export function LessonPage() {
   if (showConfirm) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
-        <h1 className="text-xl font-bold text-[var(--soccermind-pitch-700)]">Submit your answers?</h1>
-        <p className="text-[var(--soccermind-text-muted)]">
+        <h1 className="text-xl font-bold text-[var(--soccertactiq-pitch-700)]">Submit your answers?</h1>
+        <p className="text-[var(--soccertactiq-text-muted)]">
           You won't be able to change your answers after submitting. You can retry the lesson
           later for a new attempt.
         </p>
         {submitError && (
-          <p role="alert" className="text-sm text-[var(--soccermind-danger)]">
+          <p role="alert" className="text-sm text-[var(--soccertactiq-danger)]">
             {submitError}
           </p>
         )}
@@ -157,12 +157,12 @@ export function LessonPage() {
 
   return (
     <div className="flex flex-1 flex-col gap-4">
-      <p className="text-center text-sm font-semibold text-[var(--soccermind-text-muted)]">
+      <p className="text-center text-sm font-semibold text-[var(--soccertactiq-text-muted)]">
         Question {questionIndex + 1} of {questions.length}
       </p>
 
       <fieldset className="flex flex-col gap-3">
-        <legend className="text-lg font-semibold text-[var(--soccermind-text)]">
+        <legend className="text-lg font-semibold text-[var(--soccertactiq-text)]">
           {currentQuestion.prompt}
         </legend>
         {currentQuestion.choices.map((choice) => {
@@ -174,8 +174,8 @@ export function LessonPage() {
               htmlFor={inputId}
               className={`min-h-11 flex cursor-pointer items-center gap-3 rounded-lg border-2 px-3 py-3 ${
                 checked
-                  ? 'border-[var(--soccermind-pitch-500)] bg-[var(--soccermind-pitch-100)]'
-                  : 'border-[var(--soccermind-border)]'
+                  ? 'border-[var(--soccertactiq-pitch-500)] bg-[var(--soccertactiq-pitch-100)]'
+                  : 'border-[var(--soccertactiq-border)]'
               }`}
             >
               <input

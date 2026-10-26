@@ -1,1 +1,1 @@
-web: cd backend && python manage.py migrate --noinput && gunicorn soccermind.wsgi:application --bind 0.0.0.0:$PORT
+web: cd backend && python manage.py migrate --noinput && gunicorn soccertactiq.wsgi:application --bind 0.0.0.0:$PORT

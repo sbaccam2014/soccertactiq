@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 class CurrentUserView(APIView):
     """
     GET /api/auth/me/ — the authenticated player's own identity. A thin
-    SoccerMind-shaped convenience endpoint; registration/login/logout themselves
+    SoccerTactiq-shaped convenience endpoint; registration/login/logout themselves
     are handled by django-allauth's headless API (see README.md "API
     reference"), not duplicated here.
     """

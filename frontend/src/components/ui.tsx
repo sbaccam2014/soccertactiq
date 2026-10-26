@@ -14,7 +14,7 @@ export function PrimaryButton({
 }: ButtonHTMLAttributes<HTMLButtonElement> & { children: ReactNode }) {
   return (
     <button
-      className={`min-h-11 w-full rounded-lg bg-[var(--soccermind-pitch-500)] px-4 py-3 text-base font-semibold text-white transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+      className={`min-h-11 w-full rounded-lg bg-[var(--soccertactiq-pitch-500)] px-4 py-3 text-base font-semibold text-white transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
       {...rest}
     >
       {children}
@@ -29,7 +29,7 @@ export function SecondaryButton({
 }: ButtonHTMLAttributes<HTMLButtonElement> & { children: ReactNode }) {
   return (
     <button
-      className={`min-h-11 w-full rounded-lg border-2 border-[var(--soccermind-border)] bg-[var(--soccermind-surface)] px-4 py-3 text-base font-semibold text-[var(--soccermind-text)] transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+      className={`min-h-11 w-full rounded-lg border-2 border-[var(--soccertactiq-border)] bg-[var(--soccertactiq-surface)] px-4 py-3 text-base font-semibold text-[var(--soccertactiq-text)] transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
       {...rest}
     >
       {children}
@@ -45,18 +45,18 @@ export function TextField({
 }: InputHTMLAttributes<HTMLInputElement> & { label: string; error?: string; id: string }) {
   return (
     <div className="flex flex-col gap-1.5 text-left">
-      <label htmlFor={id} className="text-sm font-medium text-[var(--soccermind-text)]">
+      <label htmlFor={id} className="text-sm font-medium text-[var(--soccertactiq-text)]">
         {label}
       </label>
       <input
         id={id}
-        className="min-h-11 rounded-lg border-2 border-[var(--soccermind-border)] bg-[var(--soccermind-surface)] px-3 py-2 text-base text-[var(--soccermind-text)] outline-none"
+        className="min-h-11 rounded-lg border-2 border-[var(--soccertactiq-border)] bg-[var(--soccertactiq-surface)] px-3 py-2 text-base text-[var(--soccertactiq-text)] outline-none"
         aria-invalid={error ? 'true' : undefined}
         aria-describedby={error ? `${id}-error` : undefined}
         {...rest}
       />
       {error && (
-        <p id={`${id}-error`} role="alert" className="text-sm text-[var(--soccermind-danger)]">
+        <p id={`${id}-error`} role="alert" className="text-sm text-[var(--soccertactiq-danger)]">
           {error}
         </p>
       )}
@@ -66,7 +66,7 @@ export function TextField({
 
 export function LoadingState({ label = 'Loading…' }: { label?: string }) {
   return (
-    <div role="status" className="flex flex-1 items-center justify-center py-16 text-[var(--soccermind-text-muted)]">
+    <div role="status" className="flex flex-1 items-center justify-center py-16 text-[var(--soccertactiq-text-muted)]">
       <span>{label}</span>
     </div>
   );
@@ -82,13 +82,13 @@ export function ErrorState({
   return (
     <div
       role="alert"
-      className="flex flex-col items-center gap-3 rounded-lg border-2 border-[var(--soccermind-danger)] bg-[var(--soccermind-danger-bg)] p-4 text-center text-[var(--soccermind-danger)]"
+      className="flex flex-col items-center gap-3 rounded-lg border-2 border-[var(--soccertactiq-danger)] bg-[var(--soccertactiq-danger-bg)] p-4 text-center text-[var(--soccertactiq-danger)]"
     >
       <p>{message}</p>
       {onRetry && (
         <button
           onClick={onRetry}
-          className="min-h-11 rounded-lg border-2 border-[var(--soccermind-danger)] px-4 py-2 font-semibold"
+          className="min-h-11 rounded-lg border-2 border-[var(--soccertactiq-danger)] px-4 py-2 font-semibold"
         >
           Try again
         </button>
@@ -99,7 +99,7 @@ export function ErrorState({
 
 export function EmptyState({ children }: { children: ReactNode }) {
   return (
-    <div className="flex flex-1 items-center justify-center py-16 text-center text-[var(--soccermind-text-muted)]">
+    <div className="flex flex-1 items-center justify-center py-16 text-center text-[var(--soccertactiq-text-muted)]">
       {children}
     </div>
   );
@@ -108,7 +108,7 @@ export function EmptyState({ children }: { children: ReactNode }) {
 export function Card({ children, className = '' }: { children: ReactNode; className?: string }) {
   return (
     <div
-      className={`rounded-xl border border-[var(--soccermind-border)] bg-[var(--soccermind-surface)] p-4 shadow-sm ${className}`}
+      className={`rounded-xl border border-[var(--soccertactiq-border)] bg-[var(--soccertactiq-surface)] p-4 shadow-sm ${className}`}
     >
       {children}
     </div>

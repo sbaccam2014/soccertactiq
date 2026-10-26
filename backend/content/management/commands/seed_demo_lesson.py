@@ -8,7 +8,7 @@ SEED_TITLE = "Create a Passing Option"
 
 class Command(BaseCommand):
     help = (
-        "Create (or update) the one seed lesson described in the SoccerMind "
+        "Create (or update) the one seed lesson described in the SoccerTactiq "
         "build brief: 'Create a Passing Option', as a DRAFT with a "
         "clearly-marked placeholder video. Safe to run more than once — "
         "it updates the existing seed lesson in place rather than "

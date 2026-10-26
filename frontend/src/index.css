@@ -1,46 +1,46 @@
 @import 'tailwindcss';
 
 /*
- * SoccerMind design tokens.
+ * SoccerTactiq design tokens.
  * Mobile-first: base font size is comfortable for a phone, large touch
  * targets throughout, visible focus rings for keyboard users.
  */
 :root {
-  --soccermind-pitch-700: #0f3d2e;
-  --soccermind-pitch-600: #15543f;
-  --soccermind-pitch-500: #1d6e52;
-  --soccermind-pitch-100: #e3f3ec;
-  --soccermind-accent-500: #d97706;
-  --soccermind-accent-600: #b45309;
-  --soccermind-bg: #f8faf9;
-  --soccermind-surface: #ffffff;
-  --soccermind-text: #14241d;
-  --soccermind-text-muted: #4b5f55;
-  --soccermind-border: #d7e3dc;
-  --soccermind-danger: #b42318;
-  --soccermind-danger-bg: #fef3f2;
-  --soccermind-success: #0f7a3d;
-  --soccermind-success-bg: #ecfdf3;
+  --soccertactiq-pitch-700: #0f3d2e;
+  --soccertactiq-pitch-600: #15543f;
+  --soccertactiq-pitch-500: #1d6e52;
+  --soccertactiq-pitch-100: #e3f3ec;
+  --soccertactiq-accent-500: #d97706;
+  --soccertactiq-accent-600: #b45309;
+  --soccertactiq-bg: #f8faf9;
+  --soccertactiq-surface: #ffffff;
+  --soccertactiq-text: #14241d;
+  --soccertactiq-text-muted: #4b5f55;
+  --soccertactiq-border: #d7e3dc;
+  --soccertactiq-danger: #b42318;
+  --soccertactiq-danger-bg: #fef3f2;
+  --soccertactiq-success: #0f7a3d;
+  --soccertactiq-success-bg: #ecfdf3;
   color-scheme: light dark;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --soccermind-pitch-700: #bdeccf;
-    --soccermind-pitch-600: #9fe0b9;
-    --soccermind-pitch-500: #7bcf9e;
-    --soccermind-pitch-100: #16302334;
-    --soccermind-accent-500: #f59e0b;
-    --soccermind-accent-600: #fbbf24;
-    --soccermind-bg: #0d1512;
-    --soccermind-surface: #141f1a;
-    --soccermind-text: #eef5f1;
-    --soccermind-text-muted: #9fb3a8;
-    --soccermind-border: #27392f;
-    --soccermind-danger: #f87171;
-    --soccermind-danger-bg: #2a1413;
-    --soccermind-success: #4ade80;
-    --soccermind-success-bg: #10281a;
+    --soccertactiq-pitch-700: #bdeccf;
+    --soccertactiq-pitch-600: #9fe0b9;
+    --soccertactiq-pitch-500: #7bcf9e;
+    --soccertactiq-pitch-100: #16302334;
+    --soccertactiq-accent-500: #f59e0b;
+    --soccertactiq-accent-600: #fbbf24;
+    --soccertactiq-bg: #0d1512;
+    --soccertactiq-surface: #141f1a;
+    --soccertactiq-text: #eef5f1;
+    --soccertactiq-text-muted: #9fb3a8;
+    --soccertactiq-border: #27392f;
+    --soccertactiq-danger: #f87171;
+    --soccertactiq-danger-bg: #2a1413;
+    --soccertactiq-success: #4ade80;
+    --soccertactiq-success-bg: #10281a;
   }
 }
 
@@ -51,8 +51,8 @@ html {
 body {
   margin: 0;
   min-height: 100svh;
-  background: var(--soccermind-bg);
-  color: var(--soccermind-text);
+  background: var(--soccertactiq-bg);
+  color: var(--soccertactiq-text);
   font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
   font-size: 16px;
   line-height: 1.5;
@@ -66,7 +66,7 @@ body {
 
 /* Consistent, generous focus ring for keyboard navigation. */
 :focus-visible {
-  outline: 3px solid var(--soccermind-accent-500);
+  outline: 3px solid var(--soccertactiq-accent-500);
   outline-offset: 2px;
   border-radius: 4px;
 }

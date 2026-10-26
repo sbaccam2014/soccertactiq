@@ -30,7 +30,7 @@ export function ProgressPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-bold text-[var(--soccermind-pitch-700)]">My Progress</h1>
+      <h1 className="text-2xl font-bold text-[var(--soccertactiq-pitch-700)]">My Progress</h1>
 
       {attempts.length === 0 ? (
         <EmptyState>You haven't completed a lesson yet. Pick one from Lessons to start.</EmptyState>
@@ -42,10 +42,10 @@ export function ProgressPage() {
                 <Card className="transition active:scale-[0.99]">
                   <div className="flex items-center justify-between gap-3">
                     <div>
-                      <h2 className="font-semibold text-[var(--soccermind-text)]">
+                      <h2 className="font-semibold text-[var(--soccertactiq-text)]">
                         {attempt.lesson_title_snapshot}
                       </h2>
-                      <p className="text-sm text-[var(--soccermind-text-muted)]">
+                      <p className="text-sm text-[var(--soccertactiq-text-muted)]">
                         {new Date(attempt.submitted_at).toLocaleDateString(undefined, {
                           year: 'numeric',
                           month: 'short',
@@ -53,7 +53,7 @@ export function ProgressPage() {
                         })}
                       </p>
                     </div>
-                    <span className="shrink-0 rounded-full bg-[var(--soccermind-pitch-100)] px-2.5 py-1 text-xs font-semibold text-[var(--soccermind-pitch-700)]">
+                    <span className="shrink-0 rounded-full bg-[var(--soccertactiq-pitch-100)] px-2.5 py-1 text-xs font-semibold text-[var(--soccertactiq-pitch-700)]">
                       {attempt.correct_count}/{attempt.question_count}
                     </span>
                   </div>
