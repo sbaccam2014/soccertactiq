@@ -13,6 +13,17 @@ export default defineConfig(({ command }) => ({
   // own dev-server assets normally.
   base: command === 'build' ? '/static/' : '/',
   server: {
+    // Listen on all network interfaces (not just localhost) so other
+    // devices on the same Wi-Fi (e.g. a phone) can reach the dev
+    // server at http://<your-mac's-LAN-IP>:5173 — "localhost" on a
+    // phone always means the phone itself, never this machine.
+    host: true,
+    // Vite's dev server rejects requests whose Host header isn't on
+    // this allowlist. Add your Mac's LAN IP here (check with
+    // `ipconfig getifaddr en0`) alongside localhost/127.0.0.1 so phone
+    // requests aren't blocked. This changes whenever you switch
+    // networks/your router reassigns an IP.
+    allowedHosts: ['localhost', '127.0.0.1', '192.168.4.37'],
     // Forward API + allauth headless + Django admin requests to the local
     // Django dev server so the browser only ever talks to one origin
     // (localhost:5173) during `npm run dev`. Session cookies/CSRF therefore

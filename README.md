@@ -6,7 +6,7 @@ passing angles, movement off the ball, supporting teammates), and get
 scored explanations of the soccer reasoning — not just right/wrong.
 
 This README covers local setup, running tests, content authoring, and
-deploying to Railway.
+deploying to Railway or Render.
 
 ## Stack
 
@@ -16,7 +16,10 @@ deploying to Railway.
 - **Auth**: Django sessions + django-allauth, headless mode (JSON API, no
   server-rendered auth pages), username + password only
 - **Content administration**: Django admin
-- **Deployment target**: Railway (app + Postgres as separate services)
+- **Deployment target**: Railway (app + Postgres as separate services),
+  with Render's free tier documented as a $0/month alternative for
+  early testing — see "Deploying to Render (free tier)" below for its
+  trade-offs
 
 In production, Django serves both `/api/` and the built React app from
 one origin — see "Deploying to Railway" below for why, and
@@ -434,6 +437,108 @@ pg_dump "$DATABASE_URL" -Fc -f soccertactiq_backup.dump
 
 # Restore into a (different or recreated) database
 pg_restore --clean --if-exists -d "$DATABASE_URL" soccertactiq_backup.dump
+```
+
+Treat any downloaded backup as containing real player data once this
+app has real users — store and delete it accordingly.
+
+## Deploying to Render (free tier)
+
+A cheaper alternative to Railway for early testing: Render's free tier
+costs $0/month, with two real trade-offs worth knowing up front before
+you pick it:
+
+- **The free web service sleeps after 15 minutes of inactivity.** The
+  next request wakes it back up, but that first request can take
+  roughly a minute while it cold-starts — fine for solo/small-group
+  testing, not acceptable once real players expect a snappy app.
+- **The free PostgreSQL database expires 30 days after creation.**
+  Render then gives a 14-day grace period (the database is
+  inaccessible but not yet deleted) during which upgrading to a paid
+  plan keeps your data; after that grace period, the database and all
+  its data are **permanently deleted**. Render emails warnings as this
+  approaches. Put a reminder on your calendar, or plan to `pg_dump` a
+  backup before day 30 regardless.
+
+If/when the app has real, regular players, move to a paid plan (Render
+or Railway) before relying on it — this is a testing/demo setup, not a
+production one.
+
+### 1. Create the database
+
+In the Render dashboard: **New + → PostgreSQL**, choose the **Free**
+plan. Once it's provisioned, open it and copy the **Internal Database
+URL** from the "Connect" panel (internal URLs are private-network and
+faster than the external one — use it since the web service lives in
+the same Render account/region).
+
+### 2. Create the web service
+
+**New + → Web Service**, connect the `soccertactiq` GitHub repo, choose
+the **Free** plan, and set:
+
+| Field | Value |
+| --- | --- |
+| Root Directory | leave blank (repo root) — the build script itself `cd`s into `backend/`/`frontend/` as needed |
+| Build Command | `bash scripts/build-render.sh` |
+| Start Command | `cd backend && gunicorn soccertactiq.wsgi:application --bind 0.0.0.0:$PORT` |
+
+`scripts/build-render.sh` does everything `scripts/build.sh` does
+(frontend build, copy into `backend/staticfiles_frontend/`,
+`collectstatic`) plus runs `python manage.py migrate --noinput` — on
+Render, migrations belong in the **build** step, not chained into the
+start command the way Railway's Procfile does, since Render expects
+the start command to be the one long-running process (gunicorn) rather
+than a multi-step chain.
+
+### 3. Environment variables
+
+On the web service's **Environment** tab:
+
+| Variable | Value |
+| --- | --- |
+| `DJANGO_SECRET_KEY` | a long random string, generated once for this environment — don't reuse your local dev key or Railway's |
+| `DJANGO_DEBUG` | `False` |
+| `DJANGO_ALLOWED_HOSTS` | your Render domain, e.g. `soccertactiq.onrender.com` |
+| `DJANGO_CSRF_TRUSTED_ORIGINS` | `https://soccertactiq.onrender.com` (full origin, with scheme) |
+| `DJANGO_SECURE_COOKIES` | `True` |
+| `DATABASE_URL` | the Internal Database URL copied in step 1 |
+
+Render terminates TLS at its load balancer and forwards plain HTTP
+with an `X-Forwarded-Proto` header, exactly like Railway — the same
+`SECURE_PROXY_SSL_HEADER` handling already in `backend/soccertactiq/settings.py`
+(active whenever `DEBUG=False`) covers this correctly, so secure
+cookies and HTTPS redirection work without extra config.
+
+### 4. First deploy
+
+1. Push to the branch Render is watching (or click "Manual Deploy" for
+   the first one); it runs the build command (including migrations),
+   then starts gunicorn.
+2. Create an administrator account using Render's **Shell** tab on the
+   web service (dashboard → your service → "Shell"):
+   ```bash
+   cd backend && python manage.py createsuperuser
+   ```
+3. Optionally seed the demo lesson the same way:
+   ```bash
+   cd backend && python manage.py seed_demo_lesson
+   ```
+4. Log into `/admin/` on your Render URL, review/replace the seed
+   lesson's placeholder video, and publish it.
+
+### 5. Backup / restore, and the 30-day database expiry
+
+Render's free Postgres has **no built-in automated backups** (that's a
+paid-plan feature) and a fixed **1&nbsp;GB** storage cap — plenty for
+this app's scale, but back up manually before the 30-day expiry:
+
+```bash
+# Backup (run with the External Database URL — Internal URLs aren't reachable from your machine)
+pg_dump "$EXTERNAL_DATABASE_URL" -Fc -f soccertactiq_backup.dump
+
+# Restore into a (different or recreated) database
+pg_restore --clean --if-exists -d "$EXTERNAL_DATABASE_URL" soccertactiq_backup.dump
 ```
 
 Treat any downloaded backup as containing real player data once this
