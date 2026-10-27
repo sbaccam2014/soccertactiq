@@ -14,7 +14,12 @@ FRONTEND_STATIC_DIR="$BACKEND_DIR/staticfiles_frontend"
 
 echo "==> Installing frontend dependencies"
 cd "$FRONTEND_DIR"
-npm ci
+# --include=dev forces devDependencies to install even when NODE_ENV
+# is "production" (some hosts, e.g. Render, set this automatically on
+# deploy-time builds) — tsc, vite, and the @types/* packages the build
+# itself depends on are devDependencies, so skipping them breaks the
+# "tsc -b && vite build" step with "Cannot find type definition file".
+npm ci --include=dev
 
 echo "==> Type-checking and building frontend"
 npm run build
