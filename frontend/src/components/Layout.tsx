@@ -8,7 +8,7 @@ export function AppLayout() {
     <div className="flex min-h-svh flex-col">
       <header className="sticky top-0 z-10 flex items-center justify-between border-b border-[var(--soccertactiq-border)] bg-[var(--soccertactiq-surface)] px-4 py-3">
         <span className="flex items-center gap-2">
-          <img src="/logo-icon.png" alt="" className="h-8 w-8 rounded-md" />
+          <img src={`${import.meta.env.BASE_URL}logo-icon.png`} alt="" className="h-8 w-8 rounded-md" />
           <span className="text-lg font-bold text-[var(--soccertactiq-pitch-700)]">SoccerTactiq</span>
         </span>
         {user && (

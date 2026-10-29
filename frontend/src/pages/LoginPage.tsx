@@ -36,6 +36,11 @@ export function LoginPage() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center">
       <form onSubmit={handleSubmit} className="flex w-full max-w-xs flex-col gap-4" noValidate>
+        <img
+          src={`${import.meta.env.BASE_URL}logo.png`}
+          alt=""
+          className="mx-auto h-20 w-20 rounded-2xl shadow-sm"
+        />
         <h1 className="text-center text-2xl font-bold text-[var(--soccertactiq-pitch-700)]">Log in</h1>
 
         <TextField

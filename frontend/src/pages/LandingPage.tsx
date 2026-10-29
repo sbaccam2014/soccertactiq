@@ -13,7 +13,7 @@ export function LandingPage() {
     <div className="flex flex-1 flex-col items-center justify-center gap-6 text-center">
       <div>
         <img
-          src="/logo.png"
+          src={`${import.meta.env.BASE_URL}logo.png`}
           alt=""
           className="mx-auto h-32 w-32 rounded-2xl shadow-sm"
         />
