@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { fetchCategoryVideos, fetchVideoCategories } from '../api/content';
-import { buildYoutubeLink, formatTimestampGuidance } from '../lib/youtube';
+import { formatTimestampGuidance } from '../lib/youtube';
 import type { CategoryVideo } from '../types';
 import { Card, EmptyState, ErrorState, LoadingState } from '../components/ui';
+import { VideoPlayer } from '../components/VideoPlayer';
 
 type LoadState = 'loading' | 'error' | 'ready';
 
@@ -99,20 +100,15 @@ export function VideoLibraryPage() {
                         {video.title}
                       </h2>
                       {video.description && (
-                        <p className="mt-1 text-sm text-[var(--soccertactiq-text-muted)]">
+                        <p className="mt-1 mb-3 text-sm text-[var(--soccertactiq-text-muted)]">
                           {video.description}
                         </p>
                       )}
-                      <a
-                        href={buildYoutubeLink(video)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-3 flex min-h-11 items-center justify-center rounded-lg border-2 border-[var(--soccertactiq-pitch-500)] px-4 text-center text-sm font-semibold text-[var(--soccertactiq-pitch-600)]"
-                      >
-                        Watch on YouTube ↗
-                      </a>
+                      <div className="mt-3">
+                        <VideoPlayer video={video} title={video.title} />
+                      </div>
                       {timestampGuidance && (
-                        <p className="mt-2 text-center text-xs text-[var(--soccertactiq-text-muted)]">
+                        <p className="mt-2 text-xs text-[var(--soccertactiq-text-muted)]">
                           {timestampGuidance}
                         </p>
                       )}

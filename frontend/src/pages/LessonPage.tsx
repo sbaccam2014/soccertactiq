@@ -3,9 +3,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { fetchLesson, submitAttempt } from '../api/content';
 import { ApiError } from '../api/client';
 import type { LessonDetail } from '../types';
-import { buildYoutubeLink, formatTimestampGuidance } from '../lib/youtube';
+import { formatTimestampGuidance } from '../lib/youtube';
 import { generateIdempotencyKey } from '../lib/idempotency';
 import { EmptyState, ErrorState, LoadingState, PrimaryButton, SecondaryButton } from '../components/ui';
+import { VideoPlayer } from '../components/VideoPlayer';
 
 type LoadState = 'loading' | 'error' | 'not-found' | 'ready';
 
@@ -21,7 +22,6 @@ export function LessonPage() {
   const [questionIndex, setQuestionIndex] = useState(-1);
   // Answers keyed by question id, retained across Back/Next navigation.
   const [answers, setAnswers] = useState<Record<number, number>>({});
-  const [hasOpenedVideo, setHasOpenedVideo] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
@@ -100,23 +100,13 @@ export function LessonPage() {
           <p className="mt-1 text-sm text-[var(--soccertactiq-text)]">{lesson.learning_objective}</p>
         </div>
 
-        <a
-          href={buildYoutubeLink(lesson)}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => setHasOpenedVideo(true)}
-          className="min-h-11 flex items-center justify-center rounded-lg border-2 border-[var(--soccertactiq-pitch-500)] px-4 py-3 text-center font-semibold text-[var(--soccertactiq-pitch-600)]"
-        >
-          Watch the video on YouTube ↗
-        </a>
+        <VideoPlayer video={lesson} title={lesson.title} />
         {timestampGuidance && (
           <p className="text-center text-sm text-[var(--soccertactiq-text-muted)]">{timestampGuidance}</p>
         )}
-        {!hasOpenedVideo && (
-          <p className="text-center text-sm text-[var(--soccertactiq-text-muted)]">
-            Watch the video before answering — the questions assume you have.
-          </p>
-        )}
+        <p className="text-center text-sm text-[var(--soccertactiq-text-muted)]">
+          Watch the video before answering — the questions assume you have.
+        </p>
 
         <PrimaryButton onClick={() => setQuestionIndex(0)} disabled={questions.length === 0}>
           {questions.length === 0 ? 'No questions yet' : 'Start questions'}
