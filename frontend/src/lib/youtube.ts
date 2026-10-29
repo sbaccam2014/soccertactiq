@@ -53,6 +53,11 @@ export function extractYoutubeVideoId(videoUrl: string): string | null {
  * <iframe>. Returns null if the video's URL doesn't yield a
  * recognizable video ID (e.g. the seed data's PLACEHOLDER value),
  * in which case callers should show the "Open on YouTube" link only.
+ * autoplay=1 is intentional here: this URL is only ever loaded after
+ * the viewer has already tapped a thumbnail/play button (see
+ * VideoPlayer), so autoplaying at that point is expected, not a
+ * surprise — YouTube still requires a user gesture for audio, so nothing
+ * plays with sound without the viewer having already interacted.
  */
 export function buildYoutubeEmbedUrl(video: {
   video_url: string;
@@ -61,10 +66,39 @@ export function buildYoutubeEmbedUrl(video: {
   const videoId = extractYoutubeVideoId(video.video_url);
   if (!videoId) return null;
   const embedUrl = new URL(`https://www.youtube.com/embed/${videoId}`);
+  embedUrl.searchParams.set('autoplay', '1');
   if (video.video_start_seconds != null) {
     embedUrl.searchParams.set('start', String(video.video_start_seconds));
   }
   return embedUrl.toString();
+}
+
+/**
+ * Builds a youtube.com/shorts/ URL for an extracted video ID — used to
+ * tell Shorts (vertical, 9:16) apart from ordinary (horizontal, 16:9)
+ * videos so the player can size itself appropriately instead of
+ * stretching a vertical clip into a mostly-empty landscape box.
+ */
+export function isYoutubeShorts(videoUrl: string): boolean {
+  try {
+    return new URL(videoUrl).pathname.startsWith('/shorts/');
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Builds a YouTube thumbnail image URL from i.ytimg.com — YouTube's
+ * own public thumbnail CDN (the same images youtube.com itself serves
+ * for video previews), not a scrape or a locally-cached copy. Used so
+ * the Video Library and Lesson screens can show a lightweight preview
+ * image instead of loading 30+ iframes at once; the actual player only
+ * loads once a viewer taps to play (see VideoPlayer).
+ */
+export function buildYoutubeThumbnailUrl(videoUrl: string): string | null {
+  const videoId = extractYoutubeVideoId(videoUrl);
+  if (!videoId) return null;
+  return `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
 }
 
 export function formatTimestampGuidance(video: {
