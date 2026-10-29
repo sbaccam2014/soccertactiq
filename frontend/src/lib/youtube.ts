@@ -1,10 +1,12 @@
 /**
  * Builds the ordinary YouTube link we send the player to, adding a
- * start-time query param when specified. Used for the "Open on
- * YouTube" fallback link — never embed, fetch, or proxy the video
- * ourselves beyond YouTube's own official embed player (see
- * buildYoutubeEmbedUrl below). Works for both full Lessons and the
- * simpler CategoryVideo library, which share this video_url +
+ * start-time query param when specified. This is the only way the app
+ * links to a video's actual playback — never embedded, fetched, or
+ * proxied (an inline youtube.com/embed/ player was tried and dropped:
+ * a meaningful share of these Shorts have embedding disabled by their
+ * uploader, confirmed directly against YouTube independent of this
+ * app, so it failed unpredictably). Works for both full Lessons and
+ * the simpler CategoryVideo library, which share this video_url +
  * video_start_seconds shape.
  */
 export function buildYoutubeLink(video: {
@@ -45,32 +47,6 @@ export function extractYoutubeVideoId(videoUrl: string): string | null {
   } catch {
     return null;
   }
-}
-
-/**
- * Builds a youtube.com/embed/ URL — YouTube's own official embed
- * endpoint, the sanctioned way to show a player inline — for use in an
- * <iframe>. Returns null if the video's URL doesn't yield a
- * recognizable video ID (e.g. the seed data's PLACEHOLDER value),
- * in which case callers should show the "Open on YouTube" link only.
- * autoplay=1 is intentional here: this URL is only ever loaded after
- * the viewer has already tapped a thumbnail/play button (see
- * VideoPlayer), so autoplaying at that point is expected, not a
- * surprise — YouTube still requires a user gesture for audio, so nothing
- * plays with sound without the viewer having already interacted.
- */
-export function buildYoutubeEmbedUrl(video: {
-  video_url: string;
-  video_start_seconds: number | null;
-}): string | null {
-  const videoId = extractYoutubeVideoId(video.video_url);
-  if (!videoId) return null;
-  const embedUrl = new URL(`https://www.youtube.com/embed/${videoId}`);
-  embedUrl.searchParams.set('autoplay', '1');
-  if (video.video_start_seconds != null) {
-    embedUrl.searchParams.set('start', String(video.video_start_seconds));
-  }
-  return embedUrl.toString();
 }
 
 /**
