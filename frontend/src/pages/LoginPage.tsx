@@ -39,7 +39,7 @@ export function LoginPage() {
         <img
           src={`${import.meta.env.BASE_URL}logo.png`}
           alt=""
-          className="mx-auto h-20 w-20 rounded-2xl shadow-sm"
+          className="mx-auto h-36 w-36 rounded-2xl shadow-sm"
         />
         <h1 className="text-center text-2xl font-bold text-[var(--soccertactiq-pitch-700)]">Log in</h1>
 

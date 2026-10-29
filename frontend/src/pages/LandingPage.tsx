@@ -15,7 +15,7 @@ export function LandingPage() {
         <img
           src={`${import.meta.env.BASE_URL}logo.png`}
           alt=""
-          className="mx-auto h-32 w-32 rounded-2xl shadow-sm"
+          className="mx-auto h-48 w-48 rounded-2xl shadow-sm"
         />
         <h1 className="mt-4 text-3xl font-bold text-[var(--soccertactiq-pitch-700)]">
           SoccerTactiq
