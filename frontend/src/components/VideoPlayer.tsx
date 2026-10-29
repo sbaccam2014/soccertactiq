@@ -21,6 +21,14 @@ interface VideoLike {
  * means a video whose embedding is restricted still shows a usable
  * preview with a working "Open on YouTube" link, rather than an
  * always-loaded iframe showing an embed error.
+ *
+ * Some videos have embedding disabled by their uploader (YouTube's
+ * own "Error 153 / Video player configuration error"), and that error
+ * renders entirely inside YouTube's cross-origin iframe — there's no
+ * JS event this page can catch to detect it automatically. Rather
+ * than leave a dead-end error screen, the "Open on YouTube" link and
+ * a "Back to preview" control stay visible right under the player at
+ * all times once it's playing, so there's always a visible way out.
  */
 export function VideoPlayer({ video, title }: { video: VideoLike; title: string }) {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -89,14 +97,31 @@ export function VideoPlayer({ video, title }: { video: VideoLike; title: string 
           </button>
         )}
       </div>
-      <a
-        href={watchUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="self-start text-sm font-semibold text-[var(--soccertactiq-pitch-600)]"
-      >
-        Open on YouTube ↗
-      </a>
+      <div className="flex items-center gap-3">
+        <a
+          href={watchUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm font-semibold text-[var(--soccertactiq-pitch-600)]"
+        >
+          Open on YouTube ↗
+        </a>
+        {isPlaying && (
+          <button
+            type="button"
+            onClick={() => setIsPlaying(false)}
+            className="text-sm text-[var(--soccertactiq-text-muted)] underline"
+          >
+            Back to preview
+          </button>
+        )}
+      </div>
+      {isPlaying && (
+        <p className="text-xs text-[var(--soccertactiq-text-muted)]">
+          Video not playing? Some videos can only be watched on YouTube directly — use the
+          link above.
+        </p>
+      )}
     </div>
   );
 }
