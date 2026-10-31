@@ -1,47 +1,41 @@
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
-from content.models import AnswerChoice, Lesson, Question
+from content.models import AnswerChoice, Question, Video
 
 SEED_TITLE = "Create a Passing Option"
 
 
 class Command(BaseCommand):
     help = (
-        "Create (or update) the one seed lesson described in the SoccerTactiq "
+        "Create (or update) the one seed video described in the SoccerTactiq "
         "build brief: 'Create a Passing Option', as a DRAFT with a "
         "clearly-marked placeholder video. Safe to run more than once — "
-        "it updates the existing seed lesson in place rather than "
+        "it updates the existing seed video in place rather than "
         "duplicating it."
     )
 
     def handle(self, *args, **options):
         with transaction.atomic():
-            lesson, created = Lesson.objects.update_or_create(
+            video, created = Video.objects.update_or_create(
                 title=SEED_TITLE,
                 defaults=dict(
                     description=(
-                        "Illustrative lesson on creating a clear passing "
+                        "Illustrative video on creating a clear passing "
                         "option: moving to open an angle, checking toward "
                         "the ball, and receiving with good body position. "
                         "Questions are illustrative until matched to an "
                         "actual clip."
                     ),
-                    learning_objective=(
-                        "Recognize how movement off the ball — angle, "
-                        "timing, and body position — creates a usable "
-                        "passing option for a teammate under pressure."
-                    ),
-                    topic="Passing angles & movement off the ball",
                     video_url="https://www.youtube.com/watch?v=PLACEHOLDER",
                     is_placeholder_video=True,
-                    status=Lesson.Status.DRAFT,
+                    status=Video.Status.DRAFT,
                 ),
             )
-            lesson.questions.all().delete()  # clean re-seed of questions/choices
+            video.questions.all().delete()  # clean re-seed of questions/choices
 
             q1 = Question.objects.create(
-                lesson=lesson,
+                video=video,
                 display_order=1,
                 prompt=(
                     "Illustrative scenario: a player is standing directly "
@@ -89,7 +83,7 @@ class Command(BaseCommand):
             )
 
             q2 = Question.objects.create(
-                lesson=lesson,
+                video=video,
                 display_order=2,
                 prompt=(
                     "Illustrative scenario: a teammate on the ball has no "
@@ -134,7 +128,7 @@ class Command(BaseCommand):
             )
 
             q3 = Question.objects.create(
-                lesson=lesson,
+                video=video,
                 display_order=3,
                 prompt=(
                     "Illustrative scenario: a player is about to receive a "
@@ -183,7 +177,7 @@ class Command(BaseCommand):
         verb = "Created" if created else "Updated"
         self.stdout.write(
             self.style.SUCCESS(
-                f'{verb} seed lesson "{SEED_TITLE}" (id={lesson.id}) as DRAFT '
+                f'{verb} seed video "{SEED_TITLE}" (id={video.id}) as DRAFT '
                 "with a placeholder video. Publish it from Django admin "
                 "once reviewed (and replace the placeholder video_url "
                 "with a real, authorized video before publishing for real "

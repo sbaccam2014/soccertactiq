@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from content.models import AnswerChoice, Lesson, Question
+from content.models import AnswerChoice, Question, Video
 
 from .models import Attempt, AttemptAnswer
 
@@ -14,11 +14,11 @@ class AnswerSubmissionSerializer(serializers.Serializer):
 
 class AttemptSubmissionSerializer(serializers.Serializer):
     """
-    Request body for POST /api/lessons/<id>/attempts/.
+    Request body for POST /api/videos/<id>/attempts/.
 
-    The lesson is taken from the URL, and the player from
+    The video is taken from the URL, and the player from
     request.user — never from the request body — so a client can never
-    submit on behalf of another player or against a lesson ID mismatched
+    submit on behalf of another player or against a video ID mismatched
     with the answers. `idempotency_key` lets a client safely retry a
     submit (e.g. after a timeout) without creating a duplicate attempt.
     """
@@ -27,7 +27,7 @@ class AttemptSubmissionSerializer(serializers.Serializer):
     answers = AnswerSubmissionSerializer(many=True)
 
     def validate(self, attrs):
-        lesson: Lesson = self.context["lesson"]
+        video: Video = self.context["video"]
         answers = attrs["answers"]
 
         question_ids_submitted = [a["question_id"] for a in answers]
@@ -36,12 +36,12 @@ class AttemptSubmissionSerializer(serializers.Serializer):
                 "Each question may only be answered once per submission."
             )
 
-        lesson_question_ids = set(
-            lesson.questions.values_list("id", flat=True)
+        video_question_ids = set(
+            video.questions.values_list("id", flat=True)
         )
-        if set(question_ids_submitted) != lesson_question_ids:
+        if set(question_ids_submitted) != video_question_ids:
             raise serializers.ValidationError(
-                "An answer is required for every question in this lesson, "
+                "An answer is required for every question for this video, "
                 "and only for questions that belong to it."
             )
 
@@ -83,7 +83,7 @@ class AttemptResultSerializer(serializers.ModelSerializer):
     """
     Full result shape returned after submission AND when viewing a past
     attempt's detail: submitted answers, correct answers, explanations,
-    and score — all taken from snapshots so later lesson edits never
+    and score — all taken from snapshots so later video edits never
     change how a historical attempt is displayed.
     """
 
@@ -93,8 +93,8 @@ class AttemptResultSerializer(serializers.ModelSerializer):
         model = Attempt
         fields = [
             "id",
-            "lesson",
-            "lesson_title_snapshot",
+            "video",
+            "video_title_snapshot",
             "submitted_at",
             "correct_count",
             "question_count",
@@ -110,8 +110,8 @@ class AttemptSummarySerializer(serializers.ModelSerializer):
         model = Attempt
         fields = [
             "id",
-            "lesson",
-            "lesson_title_snapshot",
+            "video",
+            "video_title_snapshot",
             "submitted_at",
             "correct_count",
             "question_count",

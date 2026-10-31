@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { fetchLesson, submitAttempt } from '../api/content';
+import { fetchVideo, submitAttempt } from '../api/content';
 import { ApiError } from '../api/client';
-import type { LessonDetail } from '../types';
+import type { VideoDetail } from '../types';
 import { formatTimestampGuidance } from '../lib/youtube';
 import { generateIdempotencyKey } from '../lib/idempotency';
 import { EmptyState, ErrorState, LoadingState, PrimaryButton, SecondaryButton } from '../components/ui';
@@ -10,15 +10,15 @@ import { VideoPlayer } from '../components/VideoPlayer';
 
 type LoadState = 'loading' | 'error' | 'not-found' | 'ready';
 
-export function LessonPage() {
-  const { lessonId } = useParams<{ lessonId: string }>();
+export function VideoQuestionPage() {
+  const { videoId } = useParams<{ videoId: string }>();
   const navigate = useNavigate();
-  const id = Number(lessonId);
+  const id = Number(videoId);
 
-  const [lesson, setLesson] = useState<LessonDetail | null>(null);
+  const [video, setVideo] = useState<VideoDetail | null>(null);
   const [state, setState] = useState<LoadState>('loading');
 
-  // questionIndex: -1 = intro screen (title/goal/video), 0..n-1 = questions
+  // questionIndex: -1 = intro screen (title/description/video), 0..n-1 = questions
   const [questionIndex, setQuestionIndex] = useState(-1);
   // Answers keyed by question id, retained across Back/Next navigation.
   const [answers, setAnswers] = useState<Record<number, number>>({});
@@ -26,9 +26,9 @@ export function LessonPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   // One idempotency key per "attempt in progress," generated once when
-  // the player opens this lesson and reused for every submit (including
+  // the player opens this video and reused for every submit (including
   // a manual retry after a network error) so a repeated request can
-  // never create a duplicate Attempt. Opening the lesson again later
+  // never create a duplicate Attempt. Opening the video again later
   // (a genuinely new attempt) remounts this component and gets a fresh
   // key via this lazy initializer.
   const [idempotencyKey] = useState(generateIdempotencyKey);
@@ -36,8 +36,8 @@ export function LessonPage() {
   async function load() {
     setState('loading');
     try {
-      const data = await fetchLesson(id);
-      setLesson(data);
+      const data = await fetchVideo(id);
+      setVideo(data);
       setState('ready');
     } catch (err) {
       if (err instanceof ApiError && err.status === 404) {
@@ -53,18 +53,18 @@ export function LessonPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  const timestampGuidance = useMemo(() => (lesson ? formatTimestampGuidance(lesson) : null), [lesson]);
+  const timestampGuidance = useMemo(() => (video ? formatTimestampGuidance(video) : null), [video]);
 
-  if (state === 'loading') return <LoadingState label="Loading lesson…" />;
+  if (state === 'loading') return <LoadingState label="Loading video…" />;
   if (state === 'not-found') {
-    return <EmptyState>This lesson isn't available right now.</EmptyState>;
+    return <EmptyState>This video isn't available right now.</EmptyState>;
   }
-  if (state === 'error' || !lesson) {
-    return <ErrorState message="Couldn't load this lesson." onRetry={load} />;
+  if (state === 'error' || !video) {
+    return <ErrorState message="Couldn't load this video." onRetry={load} />;
   }
 
-  const currentLessonId = lesson.id;
-  const questions = lesson.questions;
+  const currentVideoId = video.id;
+  const questions = video.questions;
   const currentQuestion = questionIndex >= 0 ? questions[questionIndex] : null;
   const allAnswered = questions.every((q) => answers[q.id] != null);
 
@@ -73,7 +73,7 @@ export function LessonPage() {
     setSubmitError('');
     try {
       const result = await submitAttempt(
-        currentLessonId,
+        currentVideoId,
         idempotencyKey,
         questions.map((q) => ({ question_id: q.id, choice_id: answers[q.id] })),
       );
@@ -86,21 +86,16 @@ export function LessonPage() {
     }
   }
 
-  // --- Intro screen: title, learning goal, video link, timestamp guidance ---
+  // --- Intro screen: title, description, video, timestamp guidance ---
   if (questionIndex === -1) {
     return (
       <div className="flex flex-col gap-4">
-        <h1 className="text-2xl font-bold text-[var(--soccertactiq-pitch-700)]">{lesson.title}</h1>
-        <p className="text-[var(--soccertactiq-text)]">{lesson.description}</p>
+        <h1 className="text-2xl font-bold text-[var(--soccertactiq-pitch-700)]">{video.title}</h1>
+        {video.description && (
+          <p className="text-[var(--soccertactiq-text)]">{video.description}</p>
+        )}
 
-        <div className="rounded-lg bg-[var(--soccertactiq-pitch-100)] p-3">
-          <h2 className="text-sm font-semibold text-[var(--soccertactiq-pitch-700)]">
-            What you're learning
-          </h2>
-          <p className="mt-1 text-sm text-[var(--soccertactiq-text)]">{lesson.learning_objective}</p>
-        </div>
-
-        <VideoPlayer video={lesson} title={lesson.title} />
+        <VideoPlayer video={video} title={video.title} />
         {timestampGuidance && (
           <p className="text-center text-sm text-[var(--soccertactiq-text-muted)]">{timestampGuidance}</p>
         )}
@@ -121,7 +116,7 @@ export function LessonPage() {
       <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
         <h1 className="text-xl font-bold text-[var(--soccertactiq-pitch-700)]">Submit your answers?</h1>
         <p className="text-[var(--soccertactiq-text-muted)]">
-          You won't be able to change your answers after submitting. You can retry the lesson
+          You won't be able to change your answers after submitting. You can retry this video
           later for a new attempt.
         </p>
         {submitError && (

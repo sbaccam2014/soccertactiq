@@ -2,32 +2,31 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from content.models import AnswerChoice, Lesson, Question
+from content.models import AnswerChoice, Question, Video
 
 User = get_user_model()
 
 
-class LessonAdminPublishTests(TestCase):
+class VideoAdminPublishTests(TestCase):
     """
-    Covers: "Admins can create drafts ... preview, publish, and unpublish
-    lessons" and the exactly-one-correct-choice guard.
+    Covers: "Admins can create drafts ... publish, and unpublish
+    videos" and the exactly-one-correct-choice guard.
     """
 
     def setUp(self):
         self.staff = User.objects.create_superuser(username="staffuser", password="x")
         self.client.force_login(self.staff)
 
-    def _make_lesson(self, correct_choices=1, choice_count=2):
-        lesson = Lesson.objects.create(
-            title="Admin Test Lesson",
+    def _make_video(self, correct_choices=1, choice_count=2):
+        video = Video.objects.create(
+            title="Admin Test Video",
             description="d",
-            learning_objective="o",
             video_url="https://www.youtube.com/watch?v=PLACEHOLDER",
             is_placeholder_video=True,
-            status=Lesson.Status.DRAFT,
+            status=Video.Status.DRAFT,
         )
         question = Question.objects.create(
-            lesson=lesson, prompt="Q?", explanation="E", display_order=1
+            video=video, prompt="Q?", explanation="E", display_order=1
         )
         for i in range(choice_count):
             AnswerChoice.objects.create(
@@ -36,65 +35,65 @@ class LessonAdminPublishTests(TestCase):
                 is_correct=(i < correct_choices),
                 display_order=i,
             )
-        return lesson
+        return video
 
     def test_admin_index_reachable(self):
         response = self.client.get("/admin/")
         self.assertEqual(response.status_code, 200)
 
-    def test_publish_action_publishes_valid_lesson(self):
-        lesson = self._make_lesson(correct_choices=1, choice_count=2)
-        changelist_url = reverse("admin:content_lesson_changelist")
+    def test_publish_action_publishes_valid_video(self):
+        video = self._make_video(correct_choices=1, choice_count=2)
+        changelist_url = reverse("admin:content_video_changelist")
         self.client.post(
             changelist_url,
             {
-                "action": "publish_lessons",
-                "_selected_action": [str(lesson.pk)],
+                "action": "publish_videos",
+                "_selected_action": [str(video.pk)],
             },
         )
-        lesson.refresh_from_db()
-        self.assertEqual(lesson.status, Lesson.Status.PUBLISHED)
+        video.refresh_from_db()
+        self.assertEqual(video.status, Video.Status.PUBLISHED)
 
-    def test_publish_action_rejects_lesson_with_no_correct_choice(self):
-        lesson = self._make_lesson(correct_choices=0, choice_count=2)
-        changelist_url = reverse("admin:content_lesson_changelist")
+    def test_publish_action_rejects_video_with_no_correct_choice(self):
+        video = self._make_video(correct_choices=0, choice_count=2)
+        changelist_url = reverse("admin:content_video_changelist")
         self.client.post(
             changelist_url,
             {
-                "action": "publish_lessons",
-                "_selected_action": [str(lesson.pk)],
+                "action": "publish_videos",
+                "_selected_action": [str(video.pk)],
             },
         )
-        lesson.refresh_from_db()
-        self.assertEqual(lesson.status, Lesson.Status.DRAFT)
+        video.refresh_from_db()
+        self.assertEqual(video.status, Video.Status.DRAFT)
 
-    def test_publish_action_rejects_lesson_with_two_correct_choices(self):
-        lesson = self._make_lesson(correct_choices=2, choice_count=2)
-        changelist_url = reverse("admin:content_lesson_changelist")
+    def test_publish_action_rejects_video_with_two_correct_choices(self):
+        video = self._make_video(correct_choices=2, choice_count=2)
+        changelist_url = reverse("admin:content_video_changelist")
         self.client.post(
             changelist_url,
             {
-                "action": "publish_lessons",
-                "_selected_action": [str(lesson.pk)],
+                "action": "publish_videos",
+                "_selected_action": [str(video.pk)],
             },
         )
-        lesson.refresh_from_db()
-        self.assertEqual(lesson.status, Lesson.Status.DRAFT)
+        video.refresh_from_db()
+        self.assertEqual(video.status, Video.Status.DRAFT)
 
     def test_unpublish_action(self):
-        lesson = self._make_lesson()
-        lesson.status = Lesson.Status.PUBLISHED
-        lesson.save()
-        changelist_url = reverse("admin:content_lesson_changelist")
+        video = self._make_video()
+        video.status = Video.Status.PUBLISHED
+        video.save()
+        changelist_url = reverse("admin:content_video_changelist")
         self.client.post(
             changelist_url,
             {
-                "action": "unpublish_lessons",
-                "_selected_action": [str(lesson.pk)],
+                "action": "unpublish_videos",
+                "_selected_action": [str(video.pk)],
             },
         )
-        lesson.refresh_from_db()
-        self.assertEqual(lesson.status, Lesson.Status.DRAFT)
+        video.refresh_from_db()
+        self.assertEqual(video.status, Video.Status.DRAFT)
 
     def test_non_staff_cannot_access_admin(self):
         User.objects.create_user(username="regular", password="x")

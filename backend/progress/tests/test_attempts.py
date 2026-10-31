@@ -1,30 +1,29 @@
 from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase
 
-from content.models import AnswerChoice, Lesson, Question
+from content.models import AnswerChoice, Question, Video
 from progress.models import Attempt
 
 User = get_user_model()
 
 
-def make_lesson():
-    lesson = Lesson.objects.create(
-        title="Scoring Lesson",
+def make_video():
+    video = Video.objects.create(
+        title="Scoring Video",
         description="desc",
-        learning_objective="objective",
         video_url="https://www.youtube.com/watch?v=PLACEHOLDER",
         is_placeholder_video=True,
-        status=Lesson.Status.PUBLISHED,
+        status=Video.Status.PUBLISHED,
     )
-    q1 = Question.objects.create(lesson=lesson, prompt="Q1?", explanation="E1", display_order=1)
+    q1 = Question.objects.create(video=video, prompt="Q1?", explanation="E1", display_order=1)
     q1_right = AnswerChoice.objects.create(question=q1, text="Right1", is_correct=True, display_order=1)
     AnswerChoice.objects.create(question=q1, text="Wrong1", is_correct=False, display_order=2)
 
-    q2 = Question.objects.create(lesson=lesson, prompt="Q2?", explanation="E2", display_order=2)
+    q2 = Question.objects.create(video=video, prompt="Q2?", explanation="E2", display_order=2)
     q2_right = AnswerChoice.objects.create(question=q2, text="Right2", is_correct=True, display_order=1)
     q2_wrong = AnswerChoice.objects.create(question=q2, text="Wrong2", is_correct=False, display_order=2)
 
-    return lesson, q1, q1_right, q2, q2_right, q2_wrong
+    return video, q1, q1_right, q2, q2_right, q2_wrong
 
 
 class AttemptSubmissionTests(APITestCase):
@@ -34,7 +33,7 @@ class AttemptSubmissionTests(APITestCase):
     """
 
     def setUp(self):
-        self.lesson, self.q1, self.q1_right, self.q2, self.q2_right, self.q2_wrong = make_lesson()
+        self.video, self.q1, self.q1_right, self.q2, self.q2_right, self.q2_wrong = make_video()
         self.user = User.objects.create_user(username="scorer", password="x")
         self.client.force_authenticate(user=self.user)
 
@@ -45,7 +44,7 @@ class AttemptSubmissionTests(APITestCase):
                 {"question_id": self.q2.id, "choice_id": self.q2_wrong.id},
             ]
         return self.client.post(
-            f"/api/lessons/{self.lesson.id}/attempts/",
+            f"/api/videos/{self.video.id}/attempts/",
             {"idempotency_key": idempotency_key, "answers": answers},
             format="json",
         )
@@ -91,8 +90,8 @@ class AttemptSubmissionTests(APITestCase):
         )
         self.assertEqual(response.status_code, 400)
 
-    def test_extra_question_not_in_lesson_rejected(self):
-        other_lesson, other_q, other_right, *_ = make_lesson()
+    def test_extra_question_not_in_video_rejected(self):
+        other_video, other_q, other_right, *_ = make_video()
         response = self.submit(
             answers=[
                 {"question_id": self.q1.id, "choice_id": self.q1_right.id},
@@ -115,9 +114,9 @@ class AttemptSubmissionTests(APITestCase):
         self.submit(idempotency_key="key-b")
         self.assertEqual(Attempt.objects.count(), 2)
 
-    def test_draft_lesson_rejects_submission(self):
-        self.lesson.status = Lesson.Status.DRAFT
-        self.lesson.save()
+    def test_draft_video_rejects_submission(self):
+        self.video.status = Video.Status.DRAFT
+        self.video.save()
         response = self.submit()
         self.assertEqual(response.status_code, 404)
 
@@ -131,13 +130,13 @@ class AttemptOwnershipTests(APITestCase):
     """Covers: "One user being unable to read another user's attempts.\""""
 
     def setUp(self):
-        self.lesson, self.q1, self.q1_right, self.q2, self.q2_right, self.q2_wrong = make_lesson()
+        self.video, self.q1, self.q1_right, self.q2, self.q2_right, self.q2_wrong = make_video()
         self.owner = User.objects.create_user(username="owner", password="x")
         self.intruder = User.objects.create_user(username="intruder", password="x")
 
         self.client.force_authenticate(user=self.owner)
         response = self.client.post(
-            f"/api/lessons/{self.lesson.id}/attempts/",
+            f"/api/videos/{self.video.id}/attempts/",
             {
                 "idempotency_key": "owner-key",
                 "answers": [
@@ -171,15 +170,15 @@ class AttemptOwnershipTests(APITestCase):
 
 
 class HistoricalAccuracyTests(APITestCase):
-    """Covers: "Historical results staying accurate after lesson edits.\""""
+    """Covers: "Historical results staying accurate after video edits.\""""
 
     def setUp(self):
-        self.lesson, self.q1, self.q1_right, self.q2, self.q2_right, self.q2_wrong = make_lesson()
+        self.video, self.q1, self.q1_right, self.q2, self.q2_right, self.q2_wrong = make_video()
         self.user = User.objects.create_user(username="historian", password="x")
         self.client.force_authenticate(user=self.user)
 
         response = self.client.post(
-            f"/api/lessons/{self.lesson.id}/attempts/",
+            f"/api/videos/{self.video.id}/attempts/",
             {
                 "idempotency_key": "hist-key",
                 "answers": [
@@ -207,10 +206,10 @@ class HistoricalAccuracyTests(APITestCase):
         self.assertEqual(q1_answer["question_explanation_snapshot"], self.original_explanation)
         self.assertEqual(q1_answer["selected_choice_text_snapshot"], self.original_choice_text)
 
-    def test_archiving_lesson_preserves_attempt(self):
-        self.lesson.status = Lesson.Status.UNAVAILABLE
-        self.lesson.save()
+    def test_archiving_video_preserves_attempt(self):
+        self.video.status = Video.Status.UNAVAILABLE
+        self.video.save()
 
         response = self.client.get(f"/api/attempts/{self.attempt_id}/")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["lesson_title_snapshot"], self.lesson.title)
+        self.assertEqual(response.json()["video_title_snapshot"], self.video.title)

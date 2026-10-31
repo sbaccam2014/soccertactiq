@@ -35,7 +35,7 @@ export function AttemptResultPage() {
     <div className="flex flex-col gap-4">
       <div className="text-center">
         <h1 className="text-2xl font-bold text-[var(--soccertactiq-pitch-700)]">
-          {attempt.lesson_title_snapshot}
+          {attempt.video_title_snapshot}
         </h1>
         <p className="mt-2 text-3xl font-bold text-[var(--soccertactiq-pitch-500)]">
           {attempt.correct_count}/{attempt.question_count} correct
@@ -77,7 +77,7 @@ export function AttemptResultPage() {
       </ul>
 
       <Link to="/dashboard">
-        <PrimaryButton>Back to lessons</PrimaryButton>
+        <PrimaryButton>Back to videos</PrimaryButton>
       </Link>
     </div>
   );

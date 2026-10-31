@@ -5,11 +5,10 @@ export interface CurrentUser {
   is_staff: boolean;
 }
 
-export interface LessonListItem {
+export interface VideoListItem {
   id: number;
   title: string;
   description: string;
-  topic: string;
   status: 'draft' | 'published' | 'unavailable';
   is_completed: boolean;
   latest_score: string | null;
@@ -29,15 +28,12 @@ export interface QuestionPublic {
   choices: AnswerChoicePublic[];
 }
 
-export interface LessonDetail {
+export interface VideoDetail {
   id: number;
   title: string;
   description: string;
-  learning_objective: string;
-  topic: string;
   video_url: string;
   video_start_seconds: number | null;
-  video_end_seconds: number | null;
   status: 'draft' | 'published' | 'unavailable';
   questions: QuestionPublic[];
 }
@@ -53,8 +49,8 @@ export interface AttemptAnswerResult {
 
 export interface AttemptResult {
   id: number;
-  lesson: number;
-  lesson_title_snapshot: string;
+  video: number;
+  video_title_snapshot: string;
   submitted_at: string;
   correct_count: number;
   question_count: number;
@@ -64,8 +60,8 @@ export interface AttemptResult {
 
 export interface AttemptSummary {
   id: number;
-  lesson: number;
-  lesson_title_snapshot: string;
+  video: number;
+  video_title_snapshot: string;
   submitted_at: string;
   correct_count: number;
   question_count: number;
@@ -84,7 +80,6 @@ export interface AnswerSubmission {
   choice_id: number;
 }
 
-
 export interface CategoryVideo {
   id: number;
   title: string;
@@ -93,4 +88,15 @@ export interface CategoryVideo {
   video_url: string;
   video_start_seconds: number | null;
   display_order: number;
+}
+
+export interface TrainingLog {
+  id: number;
+  date: string;
+  trained: boolean;
+}
+
+export interface TrainingStatus {
+  today: TrainingLog | null;
+  current_streak: number;
 }

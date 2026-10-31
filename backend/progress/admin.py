@@ -26,19 +26,19 @@ class AttemptAdmin(admin.ModelAdmin):
 
     list_display = (
         "player_profile",
-        "lesson_title_snapshot",
+        "video_title_snapshot",
         "score",
         "correct_count",
         "question_count",
         "submitted_at",
     )
-    list_filter = ("lesson",)
+    list_filter = ("video",)
     search_fields = ("player_profile__display_name", "player_profile__user__username")
     inlines = [AttemptAnswerInline]
     readonly_fields = (
         "player_profile",
-        "lesson",
-        "lesson_title_snapshot",
+        "video",
+        "video_title_snapshot",
         "submitted_at",
         "correct_count",
         "question_count",

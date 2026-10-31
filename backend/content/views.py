@@ -5,54 +5,54 @@ from rest_framework.views import APIView
 
 from progress.models import Attempt
 
-from .models import CategoryVideo, Lesson
+from .models import CategoryVideo, Video
 from .serializers import (
     CategoryVideoSerializer,
-    LessonDetailSerializer,
-    LessonListSerializer,
+    VideoDetailSerializer,
+    VideoListSerializer,
 )
 
 
-class PublishedLessonListView(generics.ListAPIView):
+class PublishedVideoListView(generics.ListAPIView):
     """
-    GET /api/lessons/ — published lessons only, with each lesson annotated
+    GET /api/videos/ — published videos only, with each video annotated
     with the current player's latest attempt (if any) so the dashboard
     can show completion status and latest score without N+1 queries.
     """
 
-    serializer_class = LessonListSerializer
+    serializer_class = VideoListSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         player_profile = self.request.user.player_profile
-        latest_attempt_for_lesson = (
+        latest_attempt_for_video = (
             Attempt.objects.filter(
-                lesson=OuterRef("pk"), player_profile=player_profile
+                video=OuterRef("pk"), player_profile=player_profile
             )
             .order_by("-submitted_at")
         )
         return (
-            Lesson.objects.filter(status=Lesson.Status.PUBLISHED)
+            Video.objects.filter(status=Video.Status.PUBLISHED)
             .annotate(
-                latest_score=Subquery(latest_attempt_for_lesson.values("score")[:1]),
+                latest_score=Subquery(latest_attempt_for_video.values("score")[:1]),
                 latest_attempt_id=Subquery(
-                    latest_attempt_for_lesson.values("id")[:1]
+                    latest_attempt_for_video.values("id")[:1]
                 ),
             )
             .order_by("title")
         )
 
 
-class PublishedLessonDetailView(generics.RetrieveAPIView):
+class PublishedVideoDetailView(generics.RetrieveAPIView):
     """
-    GET /api/lessons/<id>/ — a single published lesson with its questions
-    and choices, answer key withheld. 404s for draft/unavailable lessons
+    GET /api/videos/<id>/ — a single published video with its questions
+    and choices, answer key withheld. 404s for draft/unavailable videos
     so players can never discover their existence or content.
     """
 
-    serializer_class = LessonDetailSerializer
+    serializer_class = VideoDetailSerializer
     permission_classes = [permissions.IsAuthenticated]
-    queryset = Lesson.objects.filter(status=Lesson.Status.PUBLISHED)
+    queryset = Video.objects.filter(status=Video.Status.PUBLISHED)
 
 
 class CategoryVideoListView(generics.ListAPIView):
@@ -61,8 +61,8 @@ class CategoryVideoListView(generics.ListAPIView):
     optionally filtered to one category via ?category=Defense (exact,
     case-sensitive match — see VideoCategoryListView for the set of
     categories that currently have at least one published video). No
-    scoring/attempts attached — this is a simple browsable library, not
-    a lesson.
+    scoring/attempts attached — this is a simple browsable library,
+    distinct from the questions-based Videos above.
     """
 
     serializer_class = CategoryVideoSerializer

@@ -1,15 +1,16 @@
-from django.core.exceptions import ValidationError
 from django.db import models
 
 from .validators import validate_youtube_url
 
 
-class Lesson(models.Model):
+class Video(models.Model):
     """
-    A single lesson: a coaching concept, a YouTube video to watch, and an
-    ordered set of questions. Admins author these entirely through Django
-    admin (create, edit, order questions/choices, preview, publish,
-    unpublish) — no custom coach dashboard in this version.
+    A video with an ordered set of questions. Admins author these
+    entirely through Django admin (create, edit, order questions/
+    choices, publish, unpublish) — no custom coach dashboard in this
+    version. This replaces the earlier "Lesson" concept with a plainer
+    one: just a video and its questions, no separate learning-objective
+    field or topic tagging.
     """
 
     class Status(models.TextChoices):
@@ -19,34 +20,20 @@ class Lesson(models.Model):
 
     title = models.CharField(max_length=200)
     description = models.TextField(
-        help_text="Shown on the dashboard and lesson screen."
-    )
-    learning_objective = models.TextField(
-        help_text="What the player should understand after this lesson "
-        "(e.g. the soccer reasoning being taught), shown on the lesson screen."
-    )
-    topic = models.CharField(
-        max_length=100,
-        blank=True,
-        help_text="Optional free-text topic/tag, e.g. 'Passing angles'.",
+        blank=True, help_text="Shown on the dashboard and video screen."
     )
     video_url = models.URLField(
         "YouTube URL",
         max_length=500,
         validators=[validate_youtube_url],
-        help_text="An ordinary youtube.com/watch, youtube.com/embed, or "
-        "youtu.be link. Use the clearly-marked placeholder for unreviewed "
-        "seed content.",
+        help_text="An ordinary youtube.com/watch, youtube.com/embed, "
+        "youtube.com/shorts, or youtu.be link. Use the clearly-marked "
+        "placeholder for unreviewed seed content.",
     )
     video_start_seconds = models.PositiveIntegerField(
         null=True,
         blank=True,
         help_text="Optional: where players should start watching.",
-    )
-    video_end_seconds = models.PositiveIntegerField(
-        null=True,
-        blank=True,
-        help_text="Optional: where players can stop watching.",
     )
     status = models.CharField(
         max_length=20, choices=Status.choices, default=Status.DRAFT
@@ -66,23 +53,12 @@ class Lesson(models.Model):
     def __str__(self) -> str:
         return self.title
 
-    def clean(self):
-        super().clean()
-        if (
-            self.video_start_seconds is not None
-            and self.video_end_seconds is not None
-            and self.video_start_seconds >= self.video_end_seconds
-        ):
-            raise ValidationError(
-                {"video_end_seconds": "End timestamp must be after the start timestamp."}
-            )
-
 
 class Question(models.Model):
-    """A single-answer multiple-choice question belonging to a Lesson."""
+    """A single-answer multiple-choice question belonging to a Video."""
 
-    lesson = models.ForeignKey(
-        Lesson, on_delete=models.CASCADE, related_name="questions"
+    video = models.ForeignKey(
+        Video, on_delete=models.CASCADE, related_name="questions"
     )
     prompt = models.TextField()
     explanation = models.TextField(
@@ -94,10 +70,10 @@ class Question(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ["lesson_id", "display_order", "id"]
+        ordering = ["video_id", "display_order", "id"]
 
     def __str__(self) -> str:
-        return f"{self.lesson.title} — {self.prompt[:50]}"
+        return f"{self.video.title} — {self.prompt[:50]}"
 
 
 class AnswerChoice(models.Model):
@@ -123,13 +99,12 @@ class CategoryVideo(models.Model):
     """
     A simple, unscored reference video filed under a free-text category
     (e.g. "Defense", "Midfield", "Work Ethics", "Drills") — distinct
-    from Lesson, which is a full quiz-based lesson. No questions, no
-    attempts, no scoring: just a title, an ordinary YouTube link, and an
-    optional description, organized by category so players can browse
-    by topic. Category is free text rather than a fixed choice list so
-    new categories can be added from admin without a code change —
-    existing category names show up as suggestions on the add/edit
-    form via Select2's `list=` datalist, but any value is accepted.
+    from Video, which has attached questions and scored attempts. No
+    questions, no attempts, no scoring: just a title, an ordinary
+    YouTube link, and an optional description, organized by category so
+    players can browse by topic. Category is free text rather than a
+    fixed choice list so new categories can be added from admin without
+    a code change.
     """
 
     class Status(models.TextChoices):

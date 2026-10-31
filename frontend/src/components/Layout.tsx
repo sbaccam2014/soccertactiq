@@ -30,9 +30,10 @@ export function AppLayout() {
           aria-label="Primary"
           className="sticky bottom-0 z-10 flex border-t border-[var(--soccertactiq-border)] bg-[var(--soccertactiq-surface)]"
         >
-          <NavTab to="/dashboard" label="Lessons" />
-          <NavTab to="/videos" label="Video Library" />
-          <NavTab to="/progress" label="My Progress" />
+          <NavTab to="/dashboard" label="Videos" />
+          <NavTab to="/videos" label="Library" />
+          <NavTab to="/training" label="Training" />
+          <NavTab to="/progress" label="Progress" />
         </nav>
       )}
     </div>

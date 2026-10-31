@@ -2,7 +2,7 @@ from django import forms
 from django.contrib import admin, messages
 from django.utils.html import format_html
 
-from .models import AnswerChoice, CategoryVideo, Lesson, Question
+from .models import AnswerChoice, CategoryVideo, Question, Video
 
 
 class AnswerChoiceInline(admin.TabularInline):
@@ -20,8 +20,8 @@ class QuestionAdminForm(forms.ModelForm):
 
 class QuestionInline(admin.StackedInline):
     """
-    Lets an admin create/edit/order a lesson's questions directly on the
-    Lesson page. Choices are edited on the Question's own admin page
+    Lets an admin create/edit/order a video's questions directly on the
+    Video page. Choices are edited on the Question's own admin page
     (Django admin doesn't support nested inlines), linked here for
     convenience.
     """
@@ -34,7 +34,7 @@ class QuestionInline(admin.StackedInline):
 
     def edit_choices_link(self, obj):
         if not obj or not obj.pk:
-            return "Save the lesson first, then edit this question to add choices."
+            return "Save the video first, then edit this question to add choices."
         return format_html(
             '<a href="/admin/content/question/{}/change/">Edit choices for this question &rarr;</a>',
             obj.pk,
@@ -45,10 +45,10 @@ class QuestionInline(admin.StackedInline):
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ("prompt_preview", "lesson", "display_order", "choice_count")
-    list_filter = ("lesson",)
+    list_display = ("prompt_preview", "video", "display_order", "choice_count")
+    list_filter = ("video",)
     inlines = [AnswerChoiceInline]
-    fields = ("lesson", "prompt", "explanation", "display_order")
+    fields = ("video", "prompt", "explanation", "display_order")
 
     def prompt_preview(self, obj):
         return obj.prompt[:70]
@@ -70,34 +70,32 @@ class QuestionAdmin(admin.ModelAdmin):
                     request,
                     f'"{question.prompt[:50]}" has {correct_count} correct '
                     "choices marked — it must have exactly one. Fix it "
-                    "before publishing the lesson.",
+                    "before publishing the video.",
                     level=messages.WARNING,
                 )
 
 
-@admin.register(Lesson)
-class LessonAdmin(admin.ModelAdmin):
+@admin.register(Video)
+class VideoAdmin(admin.ModelAdmin):
     list_display = (
         "title",
         "status",
-        "topic",
         "question_count",
         "is_placeholder_video",
         "updated_at",
     )
     list_filter = ("status", "is_placeholder_video")
-    search_fields = ("title", "description", "topic")
+    search_fields = ("title", "description")
     inlines = [QuestionInline]
-    actions = ["publish_lessons", "unpublish_lessons", "mark_unavailable"]
+    actions = ["publish_videos", "unpublish_videos", "mark_unavailable"]
     fieldsets = (
-        (None, {"fields": ("title", "description", "learning_objective", "topic")}),
+        (None, {"fields": ("title", "description")}),
         (
             "Video",
             {
                 "fields": (
                     "video_url",
                     "video_start_seconds",
-                    "video_end_seconds",
                     "is_placeholder_video",
                 )
             },
@@ -110,54 +108,54 @@ class LessonAdmin(admin.ModelAdmin):
 
     question_count.short_description = "Questions"
 
-    def _validate_publishable(self, lesson) -> list[str]:
+    def _validate_publishable(self, video) -> list[str]:
         problems = []
-        questions = list(lesson.questions.all())
+        questions = list(video.questions.all())
         if not questions:
-            problems.append(f'"{lesson.title}" has no questions.')
+            problems.append(f'"{video.title}" has no questions.')
         for question in questions:
             correct_count = question.choices.filter(is_correct=True).count()
             total = question.choices.count()
             if total < 2:
                 problems.append(
-                    f'"{lesson.title}": question "{question.prompt[:40]}" '
+                    f'"{video.title}": question "{question.prompt[:40]}" '
                     "needs at least two choices."
                 )
             if correct_count != 1:
                 problems.append(
-                    f'"{lesson.title}": question "{question.prompt[:40]}" '
+                    f'"{video.title}": question "{question.prompt[:40]}" '
                     f"has {correct_count} correct choices marked (needs exactly 1)."
                 )
         return problems
 
-    @admin.action(description="Publish selected lessons")
-    def publish_lessons(self, request, queryset):
+    @admin.action(description="Publish selected videos")
+    def publish_videos(self, request, queryset):
         published = 0
-        for lesson in queryset:
-            problems = self._validate_publishable(lesson)
+        for video in queryset:
+            problems = self._validate_publishable(video)
             if problems:
                 for problem in problems:
                     self.message_user(request, problem, level=messages.ERROR)
                 continue
-            lesson.status = Lesson.Status.PUBLISHED
-            lesson.save(update_fields=["status"])
+            video.status = Video.Status.PUBLISHED
+            video.save(update_fields=["status"])
             published += 1
         if published:
             self.message_user(
-                request, f"Published {published} lesson(s).", level=messages.SUCCESS
+                request, f"Published {published} video(s).", level=messages.SUCCESS
             )
 
-    @admin.action(description="Unpublish selected lessons (back to draft)")
-    def unpublish_lessons(self, request, queryset):
-        count = queryset.update(status=Lesson.Status.DRAFT)
-        self.message_user(request, f"Unpublished {count} lesson(s).")
+    @admin.action(description="Unpublish selected videos (back to draft)")
+    def unpublish_videos(self, request, queryset):
+        count = queryset.update(status=Video.Status.DRAFT)
+        self.message_user(request, f"Unpublished {count} video(s).")
 
-    @admin.action(description="Mark selected lessons unavailable")
+    @admin.action(description="Mark selected videos unavailable")
     def mark_unavailable(self, request, queryset):
-        count = queryset.update(status=Lesson.Status.UNAVAILABLE)
+        count = queryset.update(status=Video.Status.UNAVAILABLE)
         self.message_user(
             request,
-            f"Marked {count} lesson(s) unavailable. Historic attempts are "
+            f"Marked {count} video(s) unavailable. Historic attempts are "
             "preserved.",
         )
 
@@ -167,11 +165,11 @@ class CategoryVideoAdmin(admin.ModelAdmin):
     """
     A lightweight library of reference videos organized by a free-text
     category (e.g. Defense, Midfield, Work Ethics, Drills) — separate
-    from the quiz-based Lessons above. No questions, no scoring; just a
-    curated set of links players can browse by category. The category
-    list filter (sidebar on the list view) doubles as a quick way to
-    see every category name already in use, so an admin typing a new
-    video's category can check there for existing spelling/casing
+    from the questions-based Videos above. No questions, no scoring;
+    just a curated set of links players can browse by category. The
+    category list filter (sidebar on the list view) doubles as a quick
+    way to see every category name already in use, so an admin typing a
+    new video's category can check there for existing spelling/casing
     before introducing a near-duplicate like "defense" vs "Defense".
     """
 

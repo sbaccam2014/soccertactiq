@@ -6,4 +6,5 @@ urlpatterns = [
     path("auth/me/", views.CurrentUserView.as_view(), name="current-user"),
     path("", include("content.urls")),
     path("", include("progress.urls")),
+    path("", include("training.urls")),
 ]

@@ -5,11 +5,12 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { LandingPage } from './pages/LandingPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { LoginPage } from './pages/LoginPage';
-import { DashboardPage } from './pages/DashboardPage';
-import { LessonPage } from './pages/LessonPage';
+import { VideosPage } from './pages/VideosPage';
+import { VideoQuestionPage } from './pages/VideoQuestionPage';
 import { AttemptResultPage } from './pages/AttemptResultPage';
 import { ProgressPage } from './pages/ProgressPage';
 import { VideoLibraryPage } from './pages/VideoLibraryPage';
+import { TrainingPage } from './pages/TrainingPage';
 
 export default function App() {
   return (
@@ -23,15 +24,15 @@ export default function App() {
             path="dashboard"
             element={
               <ProtectedRoute>
-                <DashboardPage />
+                <VideosPage />
               </ProtectedRoute>
             }
           />
           <Route
-            path="lessons/:lessonId"
+            path="videos-questions/:videoId"
             element={
               <ProtectedRoute>
-                <LessonPage />
+                <VideoQuestionPage />
               </ProtectedRoute>
             }
           />
@@ -56,6 +57,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <VideoLibraryPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="training"
+            element={
+              <ProtectedRoute>
+                <TrainingPage />
               </ProtectedRoute>
             }
           />

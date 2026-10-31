@@ -3,8 +3,8 @@ from django.db import models
 
 class Attempt(models.Model):
     """
-    One submission of answers for a lesson by a player. Players may retry
-    a lesson; each submission is its own Attempt row (never overwritten),
+    One submission of answers for a video by a player. Players may retry
+    a video; each submission is its own Attempt row (never overwritten),
     so "My Progress" can show dated attempt history.
 
     `idempotency_key` lets the frontend safely retry a submit request
@@ -15,17 +15,17 @@ class Attempt(models.Model):
     player_profile = models.ForeignKey(
         "accounts.PlayerProfile", on_delete=models.CASCADE, related_name="attempts"
     )
-    # Not a hard FK to Lesson's current state — see AttemptAnswer snapshots.
-    # Still a real FK so we can list "attempts for lesson X" efficiently;
-    # lessons are archived (status=unavailable) rather than deleted, so
+    # Not a hard FK to Video's current state — see AttemptAnswer snapshots.
+    # Still a real FK so we can list "attempts for video X" efficiently;
+    # videos are archived (status=unavailable) rather than deleted, so
     # historical attempts keep a valid reference.
-    lesson = models.ForeignKey(
-        "content.Lesson", on_delete=models.PROTECT, related_name="attempts"
+    video = models.ForeignKey(
+        "content.Video", on_delete=models.PROTECT, related_name="attempts"
     )
-    lesson_title_snapshot = models.CharField(
+    video_title_snapshot = models.CharField(
         max_length=200,
-        help_text="Lesson title at the time of this attempt, for display "
-        "if the lesson is later edited or archived.",
+        help_text="Video title at the time of this attempt, for display "
+        "if the video is later edited or archived.",
     )
     submitted_at = models.DateTimeField(auto_now_add=True)
     correct_count = models.PositiveIntegerField()
@@ -44,18 +44,18 @@ class Attempt(models.Model):
             )
         ]
         indexes = [
-            models.Index(fields=["player_profile", "lesson"]),
+            models.Index(fields=["player_profile", "video"]),
         ]
 
     def __str__(self) -> str:
-        return f"{self.player_profile} — {self.lesson_title_snapshot} ({self.score}%)"
+        return f"{self.player_profile} — {self.video_title_snapshot} ({self.score}%)"
 
 
 class AttemptAnswer(models.Model):
     """
     One answered question within an Attempt. Snapshots the question
     prompt/explanation and the choice texts/correctness exactly as they
-    were at submission time, so edits to the live Lesson/Question/
+    were at submission time, so edits to the live Video/Question/
     AnswerChoice content never change how a past attempt is displayed.
     """
 

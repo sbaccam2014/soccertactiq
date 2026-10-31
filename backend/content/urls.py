@@ -3,11 +3,11 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("lessons/", views.PublishedLessonListView.as_view(), name="lesson-list"),
+    path("videos/", views.PublishedVideoListView.as_view(), name="video-list"),
     path(
-        "lessons/<int:pk>/",
-        views.PublishedLessonDetailView.as_view(),
-        name="lesson-detail",
+        "videos/<int:pk>/",
+        views.PublishedVideoDetailView.as_view(),
+        name="video-detail",
     ),
     path(
         "category-videos/",

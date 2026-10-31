@@ -4,7 +4,7 @@ from . import views
 
 urlpatterns = [
     path(
-        "lessons/<int:lesson_id>/attempts/",
+        "videos/<int:video_id>/attempts/",
         views.SubmitAttemptView.as_view(),
         name="attempt-submit",
     ),

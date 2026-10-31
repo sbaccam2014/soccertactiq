@@ -4,7 +4,7 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from content.models import AnswerChoice, Lesson
+from content.models import AnswerChoice, Video
 
 from .models import Attempt, AttemptAnswer
 from .serializers import (
@@ -16,7 +16,7 @@ from .serializers import (
 
 class SubmitAttemptView(APIView):
     """
-    POST /api/lessons/<lesson_id>/attempts/
+    POST /api/videos/<video_id>/attempts/
 
     Scores the submission server-side and writes the Attempt + its
     AttemptAnswers atomically. Returns correct answers and explanations
@@ -32,16 +32,16 @@ class SubmitAttemptView(APIView):
 
     permission_classes = [permissions.IsAuthenticated]
 
-    def post(self, request, lesson_id):
-        # Draft/unavailable lessons 404 here too — players must never be
-        # able to submit against lesson content they couldn't retrieve.
-        lesson = get_object_or_404(
-            Lesson, pk=lesson_id, status=Lesson.Status.PUBLISHED
+    def post(self, request, video_id):
+        # Draft/unavailable videos 404 here too — players must never be
+        # able to submit against video content they couldn't retrieve.
+        video = get_object_or_404(
+            Video, pk=video_id, status=Video.Status.PUBLISHED
         )
         player_profile = request.user.player_profile
 
         serializer = AttemptSubmissionSerializer(
-            data=request.data, context={"lesson": lesson}
+            data=request.data, context={"video": video}
         )
         serializer.is_valid(raise_exception=True)
         answers = serializer.validated_data["answers"]
@@ -79,8 +79,8 @@ class SubmitAttemptView(APIView):
 
                 attempt = Attempt.objects.create(
                     player_profile=player_profile,
-                    lesson=lesson,
-                    lesson_title_snapshot=lesson.title,
+                    video=video,
+                    video_title_snapshot=video.title,
                     correct_count=correct_count,
                     question_count=question_count,
                     score=score,
@@ -155,4 +155,4 @@ class MyProgressView(generics.ListAPIView):
     def get_queryset(self):
         return Attempt.objects.filter(
             player_profile=self.request.user.player_profile
-        ).select_related("lesson")
+        ).select_related("video")

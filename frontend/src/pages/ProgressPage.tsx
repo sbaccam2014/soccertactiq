@@ -33,7 +33,7 @@ export function ProgressPage() {
       <h1 className="text-2xl font-bold text-[var(--soccertactiq-pitch-700)]">My Progress</h1>
 
       {attempts.length === 0 ? (
-        <EmptyState>You haven't completed a lesson yet. Pick one from Lessons to start.</EmptyState>
+        <EmptyState>You haven't completed a video yet. Pick one from Videos & Questions to start.</EmptyState>
       ) : (
         <ul className="flex flex-col gap-3">
           {attempts.map((attempt) => (
@@ -43,7 +43,7 @@ export function ProgressPage() {
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <h2 className="font-semibold text-[var(--soccertactiq-text)]">
-                        {attempt.lesson_title_snapshot}
+                        {attempt.video_title_snapshot}
                       </h2>
                       <p className="text-sm text-[var(--soccertactiq-text-muted)]">
                         {new Date(attempt.submitted_at).toLocaleDateString(undefined, {

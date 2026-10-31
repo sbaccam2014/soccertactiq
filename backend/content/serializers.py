@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import AnswerChoice, CategoryVideo, Lesson, Question
+from .models import AnswerChoice, CategoryVideo, Question, Video
 
 
 class AnswerChoicePublicSerializer(serializers.ModelSerializer):
@@ -25,14 +25,14 @@ class QuestionPublicSerializer(serializers.ModelSerializer):
         fields = ["id", "prompt", "display_order", "choices"]
 
 
-class LessonListSerializer(serializers.ModelSerializer):
+class VideoListSerializer(serializers.ModelSerializer):
     """
     Dashboard shape: brief description, completion status, and latest
     score. `latest_score` and `latest_attempt_id` are expected to be
     annotated onto the queryset by the view (see
-    PublishedLessonListView.get_queryset) — this keeps "has this player
-    completed this lesson, and with what score" a single annotated query
-    instead of one query per lesson.
+    PublishedVideoListView.get_queryset) — this keeps "has this player
+    completed this video, and with what score" a single annotated query
+    instead of one query per video.
     """
 
     latest_score = serializers.DecimalField(
@@ -42,12 +42,11 @@ class LessonListSerializer(serializers.ModelSerializer):
     is_completed = serializers.SerializerMethodField()
 
     class Meta:
-        model = Lesson
+        model = Video
         fields = [
             "id",
             "title",
             "description",
-            "topic",
             "status",
             "is_completed",
             "latest_score",
@@ -58,9 +57,9 @@ class LessonListSerializer(serializers.ModelSerializer):
         return obj.latest_attempt_id is not None
 
 
-class LessonDetailSerializer(serializers.ModelSerializer):
+class VideoDetailSerializer(serializers.ModelSerializer):
     """
-    Lesson screen shape: everything needed to render the lesson and
+    Video screen shape: everything needed to render the video and
     answer its questions, but still no answer key (see
     QuestionPublicSerializer).
     """
@@ -68,16 +67,13 @@ class LessonDetailSerializer(serializers.ModelSerializer):
     questions = QuestionPublicSerializer(many=True, read_only=True)
 
     class Meta:
-        model = Lesson
+        model = Video
         fields = [
             "id",
             "title",
             "description",
-            "learning_objective",
-            "topic",
             "video_url",
             "video_start_seconds",
-            "video_end_seconds",
             "status",
             "questions",
         ]

@@ -4,25 +4,25 @@ import type {
   AttemptResult,
   AttemptSummary,
   CategoryVideo,
-  LessonDetail,
-  LessonListItem,
   Paginated,
+  VideoDetail,
+  VideoListItem,
 } from '../types';
 
-export async function fetchLessons(): Promise<Paginated<LessonListItem>> {
-  return api.get<Paginated<LessonListItem>>('/api/lessons/');
+export async function fetchVideos(): Promise<Paginated<VideoListItem>> {
+  return api.get<Paginated<VideoListItem>>('/api/videos/');
 }
 
-export async function fetchLesson(id: number): Promise<LessonDetail> {
-  return api.get<LessonDetail>(`/api/lessons/${id}/`);
+export async function fetchVideo(id: number): Promise<VideoDetail> {
+  return api.get<VideoDetail>(`/api/videos/${id}/`);
 }
 
 export async function submitAttempt(
-  lessonId: number,
+  videoId: number,
   idempotencyKey: string,
   answers: AnswerSubmission[],
 ): Promise<AttemptResult> {
-  return api.post<AttemptResult>(`/api/lessons/${lessonId}/attempts/`, {
+  return api.post<AttemptResult>(`/api/videos/${videoId}/attempts/`, {
     idempotency_key: idempotencyKey,
     answers,
   });
@@ -35,7 +35,6 @@ export async function fetchAttempt(id: number): Promise<AttemptResult> {
 export async function fetchProgress(): Promise<Paginated<AttemptSummary>> {
   return api.get<Paginated<AttemptSummary>>('/api/progress/');
 }
-
 
 export async function fetchVideoCategories(): Promise<string[]> {
   return api.get<string[]>('/api/video-categories/');

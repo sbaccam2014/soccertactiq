@@ -74,6 +74,7 @@ INSTALLED_APPS = [
     "accounts",
     "content",
     "progress",
+    "training",
     "api",
 ]
 
