@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserChangeForm, UserCreationForm
+from django.contrib.auth.forms import AdminUserCreationForm, UserChangeForm
 
 from .models import User
 
@@ -29,8 +29,16 @@ class CaseInsensitiveUsernameFormMixin:
         return username
 
 
-class BsaUserCreationForm(CaseInsensitiveUsernameFormMixin, UserCreationForm):
-    class Meta(UserCreationForm.Meta):
+class BsaUserCreationForm(CaseInsensitiveUsernameFormMixin, AdminUserCreationForm):
+    """
+    Admin "Add user" form. Subclasses AdminUserCreationForm (not the
+    plain UserCreationForm) because Django 5.1+'s UserAdmin.add_fieldsets
+    includes a `usable_password` field (the "set password now or later"
+    toggle) that only AdminUserCreationForm declares — using the plain
+    form here raises FieldError: Unknown field(s) (usable_password).
+    """
+
+    class Meta(AdminUserCreationForm.Meta):
         model = User
 
 

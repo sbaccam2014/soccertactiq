@@ -15,12 +15,14 @@ class CurrentUserView(APIView):
 
     def get(self, request):
         user = request.user
-        profile = user.player_profile
+        profile = getattr(user, "player_profile", None)
         return Response(
             {
                 "id": user.id,
                 "username": user.username,
-                "display_name": profile.display_name or user.username,
+                "display_name": (profile.display_name if profile else "") or user.username,
                 "is_staff": user.is_staff,
+                "is_coach": user.is_coach,
+                "is_parent": user.is_parent,
             }
         )

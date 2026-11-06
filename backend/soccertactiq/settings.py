@@ -75,6 +75,8 @@ INSTALLED_APPS = [
     "content",
     "progress",
     "training",
+    "coach",
+    "parent",
     "api",
 ]
 

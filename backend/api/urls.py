@@ -7,4 +7,6 @@ urlpatterns = [
     path("", include("content.urls")),
     path("", include("progress.urls")),
     path("", include("training.urls")),
+    path("", include("coach.urls")),
+    path("", include("parent.urls")),
 ]
