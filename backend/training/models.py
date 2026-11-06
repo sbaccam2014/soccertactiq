@@ -8,9 +8,10 @@ class TrainingLog(models.Model):
     One player's yes/no record for a single calendar date: "did you
     train at least DAILY_GOAL_MINUTES minutes today?" Deliberately
     simple — one row per player per day, a single boolean, no minute
-    count or activity breakdown. A player can toggle today's entry;
-    past dates are read-only history once the day has passed (today's
-    row can still be corrected before midnight).
+    count or activity breakdown. A player can set or correct any date
+    up to and including today (e.g. to backfill a day they forgot to
+    log) — see training.views.DayTrainingView. Future dates can't be
+    logged in advance.
     """
 
     player_profile = models.ForeignKey(

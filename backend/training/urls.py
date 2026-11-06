@@ -9,4 +9,14 @@ urlpatterns = [
         name="training-today",
     ),
     path("training/", views.TrainingHistoryView.as_view(), name="training-history"),
+    path(
+        "training/calendar/",
+        views.TrainingCalendarView.as_view(),
+        name="training-calendar",
+    ),
+    path(
+        "training/<str:date>/",
+        views.DayTrainingView.as_view(),
+        name="training-day",
+    ),
 ]
