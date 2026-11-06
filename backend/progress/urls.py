@@ -4,14 +4,9 @@ from . import views
 
 urlpatterns = [
     path(
-        "videos/<int:video_id>/attempts/",
-        views.SubmitAttemptView.as_view(),
-        name="attempt-submit",
-    ),
-    path(
-        "attempts/<int:pk>/",
-        views.AttemptDetailView.as_view(),
-        name="attempt-detail",
+        "videos/<int:video_id>/watch/",
+        views.MarkVideoWatchedView.as_view(),
+        name="video-watch",
     ),
     path("progress/", views.MyProgressView.as_view(), name="my-progress"),
 ]
