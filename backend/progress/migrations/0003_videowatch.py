@@ -1,0 +1,28 @@
+import django.db.models.deletion
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('accounts', '0003_user_is_parent_parentlink'),
+        ('content', '0005_alter_video_description'),
+        ('progress', '0002_drop_attempt'),
+    ]
+
+    operations = [
+        migrations.CreateModel(
+            name='VideoWatch',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('video_title_snapshot', models.CharField(help_text='Video title at the time it was marked watched, for display if the video is later edited or archived.', max_length=200)),
+                ('watched_at', models.DateTimeField(auto_now_add=True)),
+                ('player_profile', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='video_watches', to='accounts.playerprofile')),
+                ('video', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='watches', to='content.video')),
+            ],
+            options={
+                'ordering': ['-watched_at'],
+                'constraints': [models.UniqueConstraint(fields=('player_profile', 'video'), name='progress_one_watch_per_player_per_video')],
+            },
+        ),
+    ]

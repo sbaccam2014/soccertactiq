@@ -29,10 +29,18 @@ def noop_reverse(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("content", "0001_initial"),
+        ("content", "0003_add_video"),
+        # AttemptAnswer (progress) FKs into content.question and
+        # content.answerchoice, dropped below — must be gone first.
+        ("progress", "0002_drop_attempt"),
     ]
 
     operations = [
+        migrations.RemoveField(model_name="answerchoice", name="question"),
+        migrations.RemoveField(model_name="question", name="lesson"),
+        migrations.DeleteModel(name="AnswerChoice"),
+        migrations.DeleteModel(name="Question"),
+        migrations.DeleteModel(name="Lesson"),
         migrations.AddField(
             model_name="video",
             name="category",
