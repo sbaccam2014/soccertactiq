@@ -258,3 +258,15 @@ STORAGES = {
 }
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+# ---------------------------------------------------------------------------
+# YouTube Data API v3 (video description auto-fill)
+# ---------------------------------------------------------------------------
+# Used only to fetch a video's own public description (content.youtube)
+# when a Video is saved with a new video_url — never to scrape, download,
+# or bypass anything. Blank by default; description auto-fill is a no-op
+# (logs a warning, leaves description empty) until a real key is set here.
+# Get one at https://console.cloud.google.com/apis/credentials with the
+# "YouTube Data API v3" enabled on the project.
+YOUTUBE_API_KEY = env("YOUTUBE_API_KEY", default="")
