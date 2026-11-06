@@ -30,11 +30,13 @@ export async function fetchSession(): Promise<AllauthSessionResponse> {
   return response.json();
 }
 
+/**
+ * Self-serve signup has no page in the app (accounts are created by a
+ * superuser via Django admin — see README), but this stays wired to
+ * allauth headless's signup endpoint, which is still reachable
+ * server-side, in case it's needed again.
+ */
 export async function register(username: string, password: string) {
-  // allauth headless's signup endpoint takes a single `password` field —
-  // "password confirmation" (per the brief) is enforced client-side in
-  // RegisterPage before this is ever called; the API itself has no
-  // separate password1/password2 confirmation step.
   return api.post<AllauthSessionResponse>('/_allauth/browser/v1/auth/signup', {
     username,
     password,

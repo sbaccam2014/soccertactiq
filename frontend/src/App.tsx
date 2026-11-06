@@ -2,15 +2,21 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { AppLayout } from './components/Layout';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { CoachProtectedRoute } from './components/CoachProtectedRoute';
+import { ParentProtectedRoute } from './components/ParentProtectedRoute';
+import { AnyAuthenticatedRoute } from './components/AnyAuthenticatedRoute';
 import { LandingPage } from './pages/LandingPage';
-import { RegisterPage } from './pages/RegisterPage';
+import { AboutPage } from './pages/AboutPage';
 import { LoginPage } from './pages/LoginPage';
 import { VideosPage } from './pages/VideosPage';
-import { VideoQuestionPage } from './pages/VideoQuestionPage';
-import { AttemptResultPage } from './pages/AttemptResultPage';
+import { VideoWatchPage } from './pages/VideoWatchPage';
 import { ProgressPage } from './pages/ProgressPage';
-import { VideoLibraryPage } from './pages/VideoLibraryPage';
 import { TrainingPage } from './pages/TrainingPage';
+import { CoachDashboardPage } from './pages/CoachDashboardPage';
+import { CoachPlayerDetailPage } from './pages/CoachPlayerDetailPage';
+import { CoachAddVideoPage } from './pages/CoachAddVideoPage';
+import { ParentDashboardPage } from './pages/ParentDashboardPage';
+import { ParentChildDetailPage } from './pages/ParentChildDetailPage';
 
 export default function App() {
   return (
@@ -18,7 +24,6 @@ export default function App() {
       <Routes>
         <Route element={<AppLayout />}>
           <Route index element={<LandingPage />} />
-          <Route path="register" element={<RegisterPage />} />
           <Route path="login" element={<LoginPage />} />
           <Route
             path="dashboard"
@@ -29,18 +34,10 @@ export default function App() {
             }
           />
           <Route
-            path="videos-questions/:videoId"
+            path="videos/:videoId"
             element={
               <ProtectedRoute>
-                <VideoQuestionPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="attempts/:attemptId"
-            element={
-              <ProtectedRoute>
-                <AttemptResultPage />
+                <VideoWatchPage />
               </ProtectedRoute>
             }
           />
@@ -52,20 +49,61 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="videos"
-            element={
-              <ProtectedRoute>
-                <VideoLibraryPage />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="videos" element={<Navigate to="/dashboard" replace />} />
           <Route
             path="training"
             element={
               <ProtectedRoute>
                 <TrainingPage />
               </ProtectedRoute>
+            }
+          />
+          <Route
+            path="coach"
+            element={
+              <CoachProtectedRoute>
+                <CoachDashboardPage />
+              </CoachProtectedRoute>
+            }
+          />
+          <Route
+            path="coach/players/:playerId"
+            element={
+              <CoachProtectedRoute>
+                <CoachPlayerDetailPage />
+              </CoachProtectedRoute>
+            }
+          />
+          <Route
+            path="coach/videos/new"
+            element={
+              <CoachProtectedRoute>
+                <CoachAddVideoPage />
+              </CoachProtectedRoute>
+            }
+          />
+          <Route
+            path="parent"
+            element={
+              <ParentProtectedRoute>
+                <ParentDashboardPage />
+              </ParentProtectedRoute>
+            }
+          />
+          <Route
+            path="parent/children/:childId"
+            element={
+              <ParentProtectedRoute>
+                <ParentChildDetailPage />
+              </ParentProtectedRoute>
+            }
+          />
+          <Route
+            path="about"
+            element={
+              <AnyAuthenticatedRoute>
+                <AboutPage />
+              </AnyAuthenticatedRoute>
             }
           />
           <Route path="*" element={<Navigate to="/" replace />} />

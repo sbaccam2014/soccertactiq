@@ -1,7 +1,18 @@
 import { useEffect, useState } from 'react';
 import { fetchTrainingHistory, fetchTrainingStatus, setTodayTraining } from '../api/training';
 import type { TrainingLog, TrainingStatus } from '../types';
-import { Card, EmptyState, ErrorState, LoadingState, PrimaryButton, SecondaryButton } from '../components/ui';
+import {
+  Card,
+  EmptyState,
+  ErrorState,
+  IconTile,
+  LoadingState,
+  PageHeader,
+  PrimaryButton,
+  SecondaryButton,
+} from '../components/ui';
+import { BallIcon, CheckIcon, ChartIcon, FlameIcon, XIcon } from '../components/icons';
+import { TrainingCalendar } from '../components/TrainingCalendar';
 
 const DAILY_GOAL_MINUTES = 10;
 
@@ -63,7 +74,7 @@ export function TrainingPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-bold text-[var(--soccertactiq-pitch-700)]">Training</h1>
+      <PageHeader icon={<BallIcon />}>Training</PageHeader>
 
       <Card className="text-center">
         <p className="text-sm font-semibold text-[var(--soccertactiq-text-muted)]">
@@ -74,25 +85,60 @@ export function TrainingPage() {
           <PrimaryButton
             onClick={() => handleSetToday(true)}
             disabled={isSaving}
-            className={todayTrained === true ? '' : 'opacity-60'}
+            className={`flex items-center justify-center gap-2 ${todayTrained === true ? '' : 'opacity-60'}`}
           >
-            {todayTrained === true ? 'Yes — logged ✓' : 'Yes'}
+            <CheckIcon className="h-5 w-5" />
+            {todayTrained === true ? 'Yes — logged' : 'Yes'}
           </PrimaryButton>
           <SecondaryButton
             onClick={() => handleSetToday(false)}
             disabled={isSaving}
-            className={todayTrained === false ? 'border-[var(--soccertactiq-danger)] text-[var(--soccertactiq-danger)]' : ''}
+            className={`flex items-center justify-center gap-2 ${todayTrained === false ? 'border-[var(--soccertactiq-danger)] text-[var(--soccertactiq-danger)]' : ''}`}
           >
+            <XIcon className="h-5 w-5" />
             {todayTrained === false ? 'Not yet' : 'No'}
           </SecondaryButton>
         </div>
 
         {status.current_streak > 0 && (
-          <p className="mt-4 text-sm text-[var(--soccertactiq-text-muted)]">
-            🔥 {status.current_streak} day{status.current_streak === 1 ? '' : 's'} in a row
+          <p className="mt-4 flex items-center justify-center gap-1.5 text-sm text-[var(--soccertactiq-text-muted)]">
+            <FlameIcon className="h-5 w-5 text-[var(--soccertactiq-accent-500)]" />
+            {status.current_streak} day{status.current_streak === 1 ? '' : 's'} in a row
           </p>
         )}
       </Card>
+
+      <div className="grid grid-cols-2 gap-3">
+        <Card className="flex flex-col items-center gap-2 text-center">
+          <IconTile size="sm">
+            <ChartIcon />
+          </IconTile>
+          <p className="text-2xl font-bold text-[var(--soccertactiq-pitch-700)]">
+            {status.month_trained_days}
+          </p>
+          <p className="text-xs font-semibold text-[var(--soccertactiq-text-muted)]">
+            days trained this month
+          </p>
+        </Card>
+        <Card className="flex flex-col items-center gap-2 text-center">
+          <IconTile size="sm">
+            <ChartIcon />
+          </IconTile>
+          <p className="text-2xl font-bold text-[var(--soccertactiq-pitch-700)]">
+            {status.year_trained_days}
+          </p>
+          <p className="text-xs font-semibold text-[var(--soccertactiq-text-muted)]">
+            days trained this year
+          </p>
+        </Card>
+      </div>
+
+      <TrainingCalendar
+        onChanged={(updated) => {
+          setStatus(updated);
+          loadHistory();
+        }}
+      />
 
       <h2 className="text-lg font-semibold text-[var(--soccertactiq-text)]">History</h2>
 
@@ -108,13 +154,18 @@ export function TrainingPage() {
           {history.map((log) => (
             <li key={log.id}>
               <Card className="flex items-center justify-between py-2.5">
-                <span className="text-sm text-[var(--soccertactiq-text)]">
-                  {new Date(log.date + 'T00:00:00').toLocaleDateString(undefined, {
-                    weekday: 'short',
-                    month: 'short',
-                    day: 'numeric',
-                  })}
-                </span>
+                <div className="flex items-center gap-3">
+                  <IconTile size="sm" tone={log.trained ? 'pitch' : 'neutral'}>
+                    {log.trained ? <CheckIcon /> : <XIcon />}
+                  </IconTile>
+                  <span className="text-sm text-[var(--soccertactiq-text)]">
+                    {new Date(log.date + 'T00:00:00').toLocaleDateString(undefined, {
+                      weekday: 'short',
+                      month: 'short',
+                      day: 'numeric',
+                    })}
+                  </span>
+                </div>
                 <span
                   className={`text-sm font-semibold ${
                     log.trained
@@ -122,7 +173,7 @@ export function TrainingPage() {
                       : 'text-[var(--soccertactiq-text-muted)]'
                   }`}
                 >
-                  {log.trained ? `✓ ${DAILY_GOAL_MINUTES}+ min` : 'Not logged'}
+                  {log.trained ? `${DAILY_GOAL_MINUTES}+ min` : 'Not logged'}
                 </span>
               </Card>
             </li>

@@ -5,9 +5,7 @@
  * proxied (an inline youtube.com/embed/ player was tried and dropped:
  * a meaningful share of these Shorts have embedding disabled by their
  * uploader, confirmed directly against YouTube independent of this
- * app, so it failed unpredictably). Works for both full Lessons and
- * the simpler CategoryVideo library, which share this video_url +
- * video_start_seconds shape.
+ * app, so it failed unpredictably).
  */
 export function buildYoutubeLink(video: {
   video_url: string;
@@ -77,25 +75,3 @@ export function buildYoutubeThumbnailUrl(videoUrl: string): string | null {
   return `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
 }
 
-export function formatTimestampGuidance(video: {
-  video_start_seconds: number | null;
-  video_end_seconds?: number | null;
-}): string | null {
-  const video_start_seconds = video.video_start_seconds;
-  const video_end_seconds = video.video_end_seconds ?? null;
-  if (video_start_seconds == null && video_end_seconds == null) return null;
-
-  const format = (totalSeconds: number) => {
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
-
-  if (video_start_seconds != null && video_end_seconds != null) {
-    return `Watch from ${format(video_start_seconds)} to ${format(video_end_seconds)}.`;
-  }
-  if (video_start_seconds != null) {
-    return `Watch from ${format(video_start_seconds)}.`;
-  }
-  return `Watch until ${format(video_end_seconds!)}.`;
-}

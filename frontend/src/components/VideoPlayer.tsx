@@ -27,8 +27,8 @@ export function VideoPlayer({ video, title }: { video: VideoLike; title: string 
   // width than stretched to the full card; ordinary videos use the
   // full card width at their native 16:9.
   const frameClassName = isShorts
-    ? 'relative mx-auto aspect-[9/16] w-full max-w-[220px] overflow-hidden rounded-lg bg-black'
-    : 'relative aspect-video w-full overflow-hidden rounded-lg bg-black';
+    ? 'relative mx-auto aspect-[9/16] w-full max-w-[220px] overflow-hidden rounded-xl bg-black'
+    : 'relative aspect-video w-full overflow-hidden rounded-xl bg-black';
 
   if (!thumbnailUrl) {
     return (

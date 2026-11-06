@@ -7,8 +7,8 @@ interface AuthState {
   user: CurrentUser | null;
   /** True while the initial session check (on app load) is in flight. */
   isLoading: boolean;
-  register: (username: string, password: string) => Promise<void>;
-  login: (username: string, password: string) => Promise<void>;
+  register: (username: string, password: string) => Promise<CurrentUser>;
+  login: (username: string, password: string) => Promise<CurrentUser>;
   logout: () => Promise<void>;
 }
 
@@ -22,8 +22,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const me = await authApi.fetchCurrentUser();
       setUser(me);
+      return me;
     } catch {
       setUser(null);
+      throw new Error('Not authenticated');
     }
   }, []);
 
@@ -50,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = useCallback(
     async (username: string, password: string) => {
       await authApi.register(username, password);
-      await refreshUser();
+      return refreshUser();
     },
     [refreshUser],
   );
@@ -58,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(
     async (username: string, password: string) => {
       await authApi.login(username, password);
-      await refreshUser();
+      return refreshUser();
     },
     [refreshUser],
   );

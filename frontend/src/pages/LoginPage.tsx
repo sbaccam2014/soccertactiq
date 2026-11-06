@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { roleHome } from '../lib/roleHome';
 import { PrimaryButton, TextField } from '../components/ui';
 
 export function LoginPage() {
@@ -14,7 +15,7 @@ export function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isLoading && user) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to={roleHome(user)} replace />;
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -22,8 +23,8 @@ export function LoginPage() {
     setFormError('');
     setIsSubmitting(true);
     try {
-      await login(username.trim(), password);
-      navigate('/dashboard', { replace: true });
+      const me = await login(username.trim(), password);
+      navigate(roleHome(me), { replace: true });
     } catch {
       // Generic message on purpose: never reveal whether the username
       // exists, only that the combination was wrong.
@@ -70,13 +71,6 @@ export function LoginPage() {
         <PrimaryButton type="submit" disabled={isSubmitting}>
           {isSubmitting ? 'Logging in…' : 'Log in'}
         </PrimaryButton>
-
-        <p className="text-center text-sm text-[var(--soccertactiq-text-muted)]">
-          New here?{' '}
-          <Link to="/register" className="font-semibold text-[var(--soccertactiq-pitch-600)]">
-            Create an account
-          </Link>
-        </p>
       </form>
     </div>
   );

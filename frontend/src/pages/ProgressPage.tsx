@@ -1,67 +1,130 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchProgress } from '../api/content';
-import type { AttemptSummary } from '../types';
-import { Card, EmptyState, ErrorState, LoadingState } from '../components/ui';
+import { fetchVideoCategories, fetchVideos } from '../api/content';
+import type { VideoListItem } from '../types';
+import { Card, EmptyState, ErrorState, IconTile, LoadingState, PageHeader } from '../components/ui';
+import { CheckIcon, ChartIcon } from '../components/icons';
+
+const ALL_TAB = 'All';
+
+type LoadState = 'loading' | 'error' | 'ready';
 
 export function ProgressPage() {
-  const [attempts, setAttempts] = useState<AttemptSummary[]>([]);
-  const [state, setState] = useState<'loading' | 'error' | 'ready'>('loading');
+  const [categories, setCategories] = useState<string[]>([]);
+  const [categoriesState, setCategoriesState] = useState<LoadState>('loading');
+  const [selected, setSelected] = useState<string>(ALL_TAB);
 
-  async function load() {
-    setState('loading');
+  const [videos, setVideos] = useState<VideoListItem[]>([]);
+  const [videosState, setVideosState] = useState<LoadState>('loading');
+
+  async function loadCategories() {
+    setCategoriesState('loading');
     try {
-      const page = await fetchProgress();
-      setAttempts(page.results);
-      setState('ready');
+      setCategories(await fetchVideoCategories());
+      setCategoriesState('ready');
     } catch {
-      setState('error');
+      setCategoriesState('error');
+    }
+  }
+
+  async function loadVideos(category: string) {
+    setVideosState('loading');
+    try {
+      const page = await fetchVideos(category === ALL_TAB ? undefined : category);
+      setVideos(page.results);
+      setVideosState('ready');
+    } catch {
+      setVideosState('error');
     }
   }
 
   useEffect(() => {
-    load();
+    loadCategories();
   }, []);
 
-  if (state === 'loading') return <LoadingState label="Loading your progress…" />;
-  if (state === 'error') {
-    return <ErrorState message="Couldn't load your progress." onRetry={load} />;
+  useEffect(() => {
+    loadVideos(selected);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected]);
+
+  if (categoriesState === 'loading') return <LoadingState label="Loading your progress…" />;
+  if (categoriesState === 'error') {
+    return <ErrorState message="Couldn't load your progress." onRetry={loadCategories} />;
   }
+
+  const watched = videos.filter((v) => v.is_watched);
+  const tabs = [ALL_TAB, ...categories];
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-bold text-[var(--soccertactiq-pitch-700)]">My Progress</h1>
+      <PageHeader icon={<ChartIcon />}>My Progress</PageHeader>
 
-      {attempts.length === 0 ? (
-        <EmptyState>You haven't completed a video yet. Pick one from Videos & Questions to start.</EmptyState>
+      {categories.length === 0 ? (
+        <EmptyState>No videos are published yet. Check back soon.</EmptyState>
       ) : (
-        <ul className="flex flex-col gap-3">
-          {attempts.map((attempt) => (
-            <li key={attempt.id}>
-              <Link to={`/attempts/${attempt.id}`} className="block">
-                <Card className="transition active:scale-[0.99]">
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <h2 className="font-semibold text-[var(--soccertactiq-text)]">
-                        {attempt.video_title_snapshot}
-                      </h2>
-                      <p className="text-sm text-[var(--soccertactiq-text-muted)]">
-                        {new Date(attempt.submitted_at).toLocaleDateString(undefined, {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                        })}
-                      </p>
-                    </div>
-                    <span className="shrink-0 rounded-full bg-[var(--soccertactiq-pitch-100)] px-2.5 py-1 text-xs font-semibold text-[var(--soccertactiq-pitch-700)]">
-                      {attempt.correct_count}/{attempt.question_count}
-                    </span>
-                  </div>
-                </Card>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <>
+          <div
+            role="tablist"
+            aria-label="Video category"
+            className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1"
+          >
+            {tabs.map((tab) => (
+              <button
+                key={tab}
+                role="tab"
+                aria-selected={selected === tab}
+                onClick={() => setSelected(tab)}
+                className={`min-h-11 shrink-0 whitespace-nowrap rounded-full px-4 text-sm font-semibold transition ${
+                  selected === tab
+                    ? 'bg-[var(--soccertactiq-pitch-500)] text-white'
+                    : 'bg-[var(--soccertactiq-pitch-100)] text-[var(--soccertactiq-text-muted)]'
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          {videosState === 'loading' && <LoadingState label="Loading…" />}
+          {videosState === 'error' && (
+            <ErrorState message="Couldn't load your progress." onRetry={() => loadVideos(selected)} />
+          )}
+          {videosState === 'ready' && watched.length === 0 && (
+            <EmptyState>
+              No videos watched yet{selected !== ALL_TAB ? ` in ${selected}` : ''}.
+            </EmptyState>
+          )}
+          {videosState === 'ready' && watched.length > 0 && (
+            <>
+              <p className="text-sm font-semibold text-[var(--soccertactiq-text-muted)]">
+                {watched.length} video{watched.length === 1 ? '' : 's'} watched
+              </p>
+              <ul className="flex flex-col gap-3">
+                {watched.map((video) => (
+                  <li key={video.id}>
+                    <Link to={`/videos/${video.id}`} className="block">
+                      <Card className="transition active:scale-[0.99]">
+                        <div className="flex items-center gap-3">
+                          <IconTile size="sm">
+                            <CheckIcon />
+                          </IconTile>
+                          <div className="flex flex-1 items-center justify-between gap-3">
+                            <h2 className="font-semibold text-[var(--soccertactiq-text)]">
+                              {video.title}
+                            </h2>
+                            <span className="shrink-0 rounded-full bg-[var(--soccertactiq-pitch-100)] px-2.5 py-1 text-xs font-semibold text-[var(--soccertactiq-pitch-700)]">
+                              {video.category}
+                            </span>
+                          </div>
+                        </div>
+                      </Card>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </>
       )}
     </div>
   );
