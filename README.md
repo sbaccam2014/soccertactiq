@@ -515,17 +515,22 @@ cookies and HTTPS redirection work without extra config.
 1. Push to the branch Render is watching (or click "Manual Deploy" for
    the first one); it runs the build command (including migrations),
    then starts gunicorn.
-2. Create an administrator account using Render's **Shell** tab on the
-   web service (dashboard → your service → "Shell"):
+2. Create an administrator account. Render's **Shell** tab requires a
+   paid instance type, so on the free tier use `createsuperuser`'s
+   non-interactive mode via a one-off **Job** instead (dashboard → your
+   web service → "Jobs" → "New Job", or the Render CLI if installed):
    ```bash
-   cd backend && python manage.py createsuperuser
+   cd backend && DJANGO_SUPERUSER_PASSWORD='<your password>' \
+     python manage.py createsuperuser --username admin --email you@example.com --noinput
    ```
-3. Optionally seed the demo lesson the same way:
+   If your plan does include Shell access, you can instead open the
+   Shell tab and run `python manage.py createsuperuser` interactively.
+3. Optionally seed the demo video the same way:
    ```bash
-   cd backend && python manage.py seed_demo_lesson
+   cd backend && python manage.py seed_demo_video
    ```
 4. Log into `/admin/` on your Render URL, review/replace the seed
-   lesson's placeholder video, and publish it.
+   video's placeholder video_url, and publish it.
 
 ### 5. Backup / restore, and the 30-day database expiry
 
