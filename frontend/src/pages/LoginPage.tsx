@@ -4,6 +4,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { roleHome } from '../lib/roleHome';
 import { PrimaryButton, TextField } from '../components/ui';
+import { EyeIcon, EyeOffIcon } from '../components/icons';
 
 export function LoginPage() {
   const { user, isLoading, login } = useAuth();
@@ -11,6 +12,7 @@ export function LoginPage() {
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [formError, setFormError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -52,15 +54,26 @@ export function LoginPage() {
           onChange={(e) => setUsername(e.target.value)}
           required
         />
-        <TextField
-          id="password"
-          label="Password"
-          type="password"
-          autoComplete="current-password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <div className="relative">
+          <TextField
+            id="password"
+            label="Password"
+            type={showPassword ? 'text' : 'password'}
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="pr-11"
+            required
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((shown) => !shown)}
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+            className="absolute bottom-0 right-0 flex h-11 w-11 items-center justify-center text-[var(--soccertactiq-text-muted)]"
+          >
+            {showPassword ? <EyeOffIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
+          </button>
+        </div>
 
         {formError && (
           <p role="alert" className="text-sm text-[var(--soccertactiq-danger)]">

@@ -90,6 +90,7 @@ export function TextField({
   label,
   error,
   id,
+  className,
   ...rest
 }: InputHTMLAttributes<HTMLInputElement> & { label: string; error?: string; id: string }) {
   return (
@@ -99,7 +100,7 @@ export function TextField({
       </label>
       <input
         id={id}
-        className="min-h-11 rounded-xl border-2 border-[var(--soccertactiq-border)] bg-[var(--soccertactiq-surface)] px-3 py-2 text-base text-[var(--soccertactiq-text)] outline-none"
+        className={`min-h-11 rounded-xl border-2 border-[var(--soccertactiq-border)] bg-[var(--soccertactiq-surface)] px-3 py-2 text-base text-[var(--soccertactiq-text)] outline-none ${className ?? ''}`}
         aria-invalid={error ? 'true' : undefined}
         aria-describedby={error ? `${id}-error` : undefined}
         {...rest}

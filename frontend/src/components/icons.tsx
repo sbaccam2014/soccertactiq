@@ -151,3 +151,22 @@ export function ShieldIcon(props: IconProps) {
     </Icon>
   );
 }
+
+export function EyeIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M2.5 12S5.8 5.5 12 5.5 21.5 12 21.5 12 18.2 18.5 12 18.5 2.5 12 2.5 12z" />
+      <circle cx="12" cy="12" r="3" />
+    </Icon>
+  );
+}
+
+export function EyeOffIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M3.5 3.5l17 17" />
+      <path d="M10.6 5.6A10.6 10.6 0 0112 5.5c6.2 0 9.5 6.5 9.5 6.5a16.4 16.4 0 01-3.2 4.2M6.8 7.4A16.5 16.5 0 002.5 12S5.8 18.5 12 18.5a10.4 10.4 0 004.2-.9" />
+      <path d="M9.9 9.9a3 3 0 004.2 4.2" />
+    </Icon>
+  );
+}
