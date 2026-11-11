@@ -100,7 +100,12 @@ ROOT_URLCONF = "soccertactiq.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        # Lets templates/admin/login.html override the built-in admin
+        # login page (e.g. the password show/hide toggle) — the
+        # filesystem loader here is checked before app_directories, so
+        # this wins even though django.contrib.admin is first in
+        # INSTALLED_APPS.
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [

@@ -1,0 +1,101 @@
+{% extends "admin/login.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}{{ block.super }}
+<style>
+  .password-field-wrap { position: relative; display: inline-block; }
+  .password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px 4px;
+    color: var(--body-quiet-color, #666);
+  }
+  .password-toggle svg { width: 18px; height: 18px; display: block; }
+</style>
+{% endblock %}
+
+{% block content %}
+{% if form.errors and not form.non_field_errors %}
+<p class="errornote">
+{% blocktranslate count counter=form.errors.items|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktranslate %}
+</p>
+{% endif %}
+
+{% if form.non_field_errors %}
+{% for error in form.non_field_errors %}
+<p class="errornote">
+    {{ error }}
+</p>
+{% endfor %}
+{% endif %}
+
+<div id="content-main">
+
+{% if user.is_authenticated %}
+<p class="errornote">
+{% blocktranslate trimmed %}
+    You are authenticated as {{ username }}, but are not authorized to
+    access this page. Would you like to login to a different account?
+{% endblocktranslate %}
+</p>
+{% endif %}
+
+<form action="{{ app_path }}" method="post" id="login-form">{% csrf_token %}
+  <div class="form-row">
+    {{ form.username.errors }}
+    {{ form.username.label_tag }} {{ form.username }}
+  </div>
+  <div class="form-row">
+    {{ form.password.errors }}
+    {{ form.password.label_tag }}
+    <span class="password-field-wrap">
+      {{ form.password }}
+      <button type="button" class="password-toggle" id="password-toggle" aria-label="{% translate 'Show password' %}">
+        <svg id="password-toggle-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2.5 12S5.8 5.5 12 5.5 21.5 12 21.5 12 18.2 18.5 12 18.5 2.5 12 2.5 12z" />
+          <circle cx="12" cy="12" r="3" />
+        </svg>
+        <svg id="password-toggle-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+          <path d="M3.5 3.5l17 17" />
+          <path d="M10.6 5.6A10.6 10.6 0 0112 5.5c6.2 0 9.5 6.5 9.5 6.5a16.4 16.4 0 01-3.2 4.2M6.8 7.4A16.5 16.5 0 002.5 12S5.8 18.5 12 18.5a10.4 10.4 0 004.2-.9" />
+          <path d="M9.9 9.9a3 3 0 004.2 4.2" />
+        </svg>
+      </button>
+    </span>
+    <input type="hidden" name="next" value="{{ next }}">
+  </div>
+  {% url 'admin_password_reset' as password_reset_url %}
+  {% if password_reset_url %}
+  <div class="password-reset-link">
+    <a href="{{ password_reset_url }}">{% translate 'Forgotten your login credentials?' %}</a>
+  </div>
+  {% endif %}
+  <div class="submit-row">
+    <input type="submit" value="{% translate 'Log in' %}">
+  </div>
+</form>
+
+<script>
+(function () {
+  var toggle = document.getElementById('password-toggle');
+  var passwordInput = document.getElementById('id_password');
+  var eyeIcon = document.getElementById('password-toggle-eye');
+  var eyeOffIcon = document.getElementById('password-toggle-eye-off');
+  if (!toggle || !passwordInput) return;
+  toggle.addEventListener('click', function () {
+    var showing = passwordInput.type === 'text';
+    passwordInput.type = showing ? 'password' : 'text';
+    eyeIcon.style.display = showing ? '' : 'none';
+    eyeOffIcon.style.display = showing ? 'none' : '';
+    toggle.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+  });
+})();
+</script>
+
+</div>
+{% endblock %}
