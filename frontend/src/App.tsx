@@ -36,9 +36,9 @@ export default function App() {
           <Route
             path="videos/:videoId"
             element={
-              <ProtectedRoute>
+              <AnyAuthenticatedRoute>
                 <VideoWatchPage />
-              </ProtectedRoute>
+              </AnyAuthenticatedRoute>
             }
           />
           <Route

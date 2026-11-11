@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { fetchChildDetail } from '../api/parent';
 import type { PlayerDetail } from '../types';
 import { Card, EmptyState, ErrorState, IconTile, LoadingState, PageHeader } from '../components/ui';
@@ -43,23 +43,25 @@ export function ParentChildDetailPage() {
         <ul className="flex flex-col gap-2">
           {child.watches.map((watch) => (
             <li key={watch.id}>
-              <Card className="flex items-center gap-3 py-2.5">
-                <IconTile size="sm">
-                  <VideoIcon />
-                </IconTile>
-                <div>
-                  <p className="text-sm font-semibold text-[var(--soccertactiq-text)]">
-                    {watch.video_title_snapshot}
-                  </p>
-                  <p className="text-xs text-[var(--soccertactiq-text-muted)]">
-                    {new Date(watch.watched_at).toLocaleDateString(undefined, {
-                      weekday: 'short',
-                      month: 'short',
-                      day: 'numeric',
-                    })}
-                  </p>
-                </div>
-              </Card>
+              <Link to={`/videos/${watch.video}`} className="block">
+                <Card className="flex items-center gap-3 py-2.5 transition active:scale-[0.99]">
+                  <IconTile size="sm">
+                    <VideoIcon />
+                  </IconTile>
+                  <div>
+                    <p className="text-sm font-semibold text-[var(--soccertactiq-text)]">
+                      {watch.video_title_snapshot}
+                    </p>
+                    <p className="text-xs text-[var(--soccertactiq-text-muted)]">
+                      {new Date(watch.watched_at).toLocaleDateString(undefined, {
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric',
+                      })}
+                    </p>
+                  </div>
+                </Card>
+              </Link>
             </li>
           ))}
         </ul>
