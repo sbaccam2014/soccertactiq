@@ -74,6 +74,8 @@ export interface CoachVideoInput {
   category: string;
   video_url: string;
   video_start_seconds?: number | null;
+  assigned_teams?: number[];
+  assigned_players?: number[];
 }
 
 export interface CoachVideo {
@@ -86,4 +88,11 @@ export interface CoachVideo {
   status: 'draft' | 'published' | 'unavailable';
   created_by: number | null;
   created_at: string;
+  assigned_teams: number[];
+  assigned_players: number[];
+}
+
+export interface CoachTeam {
+  id: number;
+  name: string;
 }

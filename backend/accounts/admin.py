@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from .forms import BsaUserChangeForm, BsaUserCreationForm
-from .models import CoachAssignment, ParentLink, PlayerProfile, User
+from .models import CoachAssignment, ParentLink, PlayerProfile, Team, User
 
 
 @admin.register(User)
@@ -47,11 +47,18 @@ class ParentLinkInline(admin.TabularInline):
     autocomplete_fields = ("parent",)
 
 
+@admin.register(Team)
+class TeamAdmin(admin.ModelAdmin):
+    list_display = ("name", "created_at")
+    search_fields = ("name",)
+
+
 @admin.register(PlayerProfile)
 class PlayerProfileAdmin(admin.ModelAdmin):
-    list_display = ("display_name", "user", "created_at")
+    list_display = ("display_name", "user", "team", "created_at")
+    list_filter = ("team",)
     search_fields = ("display_name", "user__username")
-    autocomplete_fields = ("user",)
+    autocomplete_fields = ("user", "team")
     inlines = (CoachAssignmentInline, ParentLinkInline)
 
 

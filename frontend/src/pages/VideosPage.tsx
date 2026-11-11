@@ -1,11 +1,18 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchVideoCategories, fetchVideos, markVideoWatched } from '../api/content';
+import {
+  fetchAssignedVideos,
+  fetchVideoCategories,
+  fetchVideos,
+  markVideoWatched,
+} from '../api/content';
 import type { VideoListItem } from '../types';
 import { Card, EmptyState, ErrorState, IconTile, LoadingState, PageHeader } from '../components/ui';
 import { VideoIcon } from '../components/icons';
 
 type LoadState = 'loading' | 'error' | 'ready';
+
+const ASSIGNED_TAB = 'Assigned';
 
 export function VideosPage() {
   const [categories, setCategories] = useState<string[]>([]);
@@ -30,7 +37,8 @@ export function VideosPage() {
   async function loadVideos(category: string) {
     setVideosState('loading');
     try {
-      const page = await fetchVideos(category);
+      const page =
+        category === ASSIGNED_TAB ? await fetchAssignedVideos() : await fetchVideos(category);
       setVideos(page.results);
       setVideosState('ready');
     } catch {
@@ -65,7 +73,7 @@ export function VideosPage() {
             aria-label="Video category"
             className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1"
           >
-            {categories.map((category) => (
+            {[ASSIGNED_TAB, ...categories].map((category) => (
               <button
                 key={category}
                 role="tab"
@@ -87,7 +95,11 @@ export function VideosPage() {
             <ErrorState message="Couldn't load videos." onRetry={() => loadVideos(selected)} />
           )}
           {videosState === 'ready' && videos.length === 0 && (
-            <EmptyState>No videos yet in this category. Check back soon.</EmptyState>
+            <EmptyState>
+              {selected === ASSIGNED_TAB
+                ? "Your coach hasn't assigned you any videos yet."
+                : 'No videos yet in this category. Check back soon.'}
+            </EmptyState>
           )}
           {videosState === 'ready' && videos.length > 0 && (
             <ul className="flex flex-col gap-3">

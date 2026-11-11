@@ -66,6 +66,22 @@ class Video(models.Model):
         help_text="The coach who added this video, if any. Null for "
         "admin/seed-authored videos.",
     )
+    assigned_teams = models.ManyToManyField(
+        "accounts.Team",
+        blank=True,
+        related_name="assigned_videos",
+        help_text="Optional. Every player still sees this video in the "
+        "global library regardless — assigning a team additionally "
+        "surfaces it in that team's players' \"Assigned\" tab.",
+    )
+    assigned_players = models.ManyToManyField(
+        "accounts.PlayerProfile",
+        blank=True,
+        related_name="assigned_videos",
+        help_text="Optional. Every player still sees this video in the "
+        "global library regardless — assigning a player additionally "
+        "surfaces it in that player's \"Assigned\" tab.",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

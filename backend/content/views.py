@@ -1,4 +1,4 @@
-from django.db.models import Exists, OuterRef
+from django.db.models import Exists, OuterRef, Q
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -7,6 +7,33 @@ from progress.models import VideoWatch
 
 from .models import Video
 from .serializers import VideoDetailSerializer, VideoListSerializer
+
+
+class AssignedVideoListView(generics.ListAPIView):
+    """
+    GET /api/videos/assigned/ — published videos assigned to the current
+    player specifically, or to their team. Distinct from the global
+    library (PublishedVideoListView): assignment only ever adds a video
+    to this list, never removes it from the main library.
+    """
+
+    serializer_class = VideoListSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        player_profile = self.request.user.player_profile
+        watch_exists = VideoWatch.objects.filter(
+            video=OuterRef("pk"), player_profile=player_profile
+        )
+        assigned_filter = Q(assigned_players=player_profile)
+        if player_profile.team_id:
+            assigned_filter |= Q(assigned_teams=player_profile.team_id)
+        return (
+            Video.objects.filter(status=Video.Status.PUBLISHED)
+            .filter(assigned_filter)
+            .annotate(is_watched=Exists(watch_exists))
+            .distinct()
+        )
 
 
 class PublishedVideoListView(generics.ListAPIView):

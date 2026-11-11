@@ -10,6 +10,10 @@ export async function fetchVideo(id: number): Promise<VideoDetail> {
   return api.get<VideoDetail>(`/api/videos/${id}/`);
 }
 
+export async function fetchAssignedVideos(): Promise<Paginated<VideoListItem>> {
+  return api.get<Paginated<VideoListItem>>('/api/videos/assigned/');
+}
+
 export async function markVideoWatched(videoId: number): Promise<VideoWatch> {
   return api.post<VideoWatch>(`/api/videos/${videoId}/watch/`);
 }

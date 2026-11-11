@@ -26,6 +26,7 @@ class VideoAdmin(admin.ModelAdmin):
     search_fields = ("title", "description", "category")
     actions = ["publish_videos", "unpublish_videos", "mark_unavailable"]
     readonly_fields = ("created_by", "description")
+    autocomplete_fields = ("assigned_teams", "assigned_players")
     fieldsets = (
         (None, {"fields": ("title", "category", "description", "display_order")}),
         (
@@ -40,6 +41,16 @@ class VideoAdmin(admin.ModelAdmin):
         ),
         ("Publishing", {"fields": ("status",)}),
         ("Authorship", {"fields": ("created_by",)}),
+        (
+            "Assignment",
+            {
+                "fields": ("assigned_teams", "assigned_players"),
+                "description": "Optional. Every player still sees this video "
+                "in the global library regardless of assignment — this just "
+                "additionally surfaces it in the assigned team/players' "
+                '"Assigned" tab.',
+            },
+        ),
     )
 
     @admin.action(description="Publish selected videos")

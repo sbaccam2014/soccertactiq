@@ -18,4 +18,14 @@ urlpatterns = [
         views.CoachVideoListCreateView.as_view(),
         name="coach-video-list-create",
     ),
+    path(
+        "coach/videos/<int:pk>/",
+        views.CoachVideoDetailView.as_view(),
+        name="coach-video-detail",
+    ),
+    path(
+        "coach/teams/",
+        views.CoachTeamListView.as_view(),
+        name="coach-team-list",
+    ),
 ]

@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 from rest_framework.test import APITestCase
 
-from accounts.models import CoachAssignment, PlayerProfile
+from accounts.models import CoachAssignment, PlayerProfile, Team
 from content.models import Video
 from progress.models import VideoWatch
 from training.models import TrainingLog
@@ -136,3 +136,103 @@ class CoachVideoCreateTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         titles = [v["title"] for v in response.json()["results"]]
         self.assertEqual(titles, ["New Video"])
+
+
+class CoachVideoAssignmentTests(APITestCase):
+    """
+    Covers: a coach can only assign videos to their own assigned
+    players/teams — never another coach's roster, even by id guessing.
+    """
+
+    def setUp(self):
+        self.coach = User.objects.create_user(
+            username="coach1", password="x", is_coach=True
+        )
+        self.client.force_authenticate(user=self.coach)
+
+        self.team = Team.objects.create(name="U12 Red")
+        self.my_player = _make_player("my-player")
+        self.my_player.team = self.team
+        self.my_player.save()
+        CoachAssignment.objects.create(coach=self.coach, player_profile=self.my_player)
+
+        self.other_team = Team.objects.create(name="U12 Blue")
+        self.other_player = _make_player("other-player")
+        self.other_player.team = self.other_team
+        self.other_player.save()
+
+    def _payload(self, **overrides):
+        payload = {
+            "title": "New Video",
+            "category": "Defense",
+            "video_url": "https://www.youtube.com/watch?v=xyz789",
+        }
+        payload.update(overrides)
+        return payload
+
+    def test_can_assign_to_own_player_and_team(self):
+        response = self.client.post(
+            "/api/coach/videos/",
+            self._payload(
+                assigned_players=[self.my_player.id], assigned_teams=[self.team.id]
+            ),
+            format="json",
+        )
+        self.assertEqual(response.status_code, 201, response.data)
+        video = Video.objects.get(title="New Video")
+        self.assertEqual(list(video.assigned_players.all()), [self.my_player])
+        self.assertEqual(list(video.assigned_teams.all()), [self.team])
+
+    def test_cannot_assign_to_other_coachs_player(self):
+        response = self.client.post(
+            "/api/coach/videos/",
+            self._payload(assigned_players=[self.other_player.id]),
+            format="json",
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_cannot_assign_to_unrelated_team(self):
+        response = self.client.post(
+            "/api/coach/videos/",
+            self._payload(assigned_teams=[self.other_team.id]),
+            format="json",
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_can_update_assignment_on_own_video(self):
+        create_response = self.client.post(
+            "/api/coach/videos/", self._payload(), format="json"
+        )
+        video_id = create_response.json()["id"]
+        response = self.client.patch(
+            f"/api/coach/videos/{video_id}/",
+            {"assigned_players": [self.my_player.id]},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200, response.data)
+        video = Video.objects.get(id=video_id)
+        self.assertEqual(list(video.assigned_players.all()), [self.my_player])
+
+    def test_cannot_update_another_coachs_video(self):
+        other_coach = User.objects.create_user(
+            username="coach2", password="x", is_coach=True
+        )
+        self.client.force_authenticate(user=other_coach)
+        create_response = self.client.post(
+            "/api/coach/videos/", self._payload(), format="json"
+        )
+        video_id = create_response.json()["id"]
+
+        self.client.force_authenticate(user=self.coach)
+        response = self.client.patch(
+            f"/api/coach/videos/{video_id}/",
+            {"assigned_players": [self.my_player.id]},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_coach_teams_list_returns_only_own_teams(self):
+        response = self.client.get("/api/coach/teams/")
+        self.assertEqual(response.status_code, 200)
+        names = [t["name"] for t in response.json()]
+        self.assertEqual(names, ["U12 Red"])

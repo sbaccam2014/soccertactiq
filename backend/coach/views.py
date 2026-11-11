@@ -3,7 +3,7 @@ from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from accounts.models import CoachAssignment, PlayerProfile
+from accounts.models import CoachAssignment, PlayerProfile, Team
 from progress.models import VideoWatch
 from training.models import TrainingLog
 from training.views import _current_streak
@@ -11,6 +11,7 @@ from training.views import _current_streak
 from .permissions import IsCoach
 from .serializers import (
     AssignedPlayerSerializer,
+    CoachTeamSerializer,
     CoachVideoSerializer,
     PlayerDetailSerializer,
 )
@@ -80,3 +81,33 @@ class CoachVideoListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         return self.request.user.authored_videos.all()
+
+
+class CoachVideoDetailView(generics.RetrieveUpdateAPIView):
+    """
+    GET/PATCH/PUT /api/coach/videos/<id>/ — a coach can only view/edit
+    (notably, re-assign) their own authored videos. 404s, not 403, for
+    any other video so a coach can't confirm another coach's video ids.
+    """
+
+    serializer_class = CoachVideoSerializer
+    permission_classes = [permissions.IsAuthenticated, IsCoach]
+
+    def get_queryset(self):
+        return self.request.user.authored_videos.all()
+
+
+class CoachTeamListView(APIView):
+    """
+    GET /api/coach/teams/ — the distinct teams among the authenticated
+    coach's assigned players, for populating the "assign to team"
+    control when adding/editing a video.
+    """
+
+    permission_classes = [permissions.IsAuthenticated, IsCoach]
+
+    def get(self, request):
+        teams = Team.objects.filter(
+            players__in=_assigned_player_profiles(request.user)
+        ).distinct()
+        return Response(CoachTeamSerializer(teams, many=True).data)

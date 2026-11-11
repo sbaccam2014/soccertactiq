@@ -45,6 +45,20 @@ class User(AbstractUser):
         return self.username
 
 
+class Team(models.Model):
+    """
+    A roster a player can belong to (e.g. a club or school team). Used
+    to target video assignments at an entire team at once — see
+    content.Video.assigned_teams. Managed via Django admin.
+    """
+
+    name = models.CharField(max_length=100, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return self.name
+
+
 class PlayerProfile(models.Model):
     """
     A player's profile within SoccerTactiq. Separated from User now so that, later,
@@ -63,6 +77,14 @@ class PlayerProfile(models.Model):
         max_length=50,
         blank=True,
         help_text="Optional nickname shown in the app. Defaults to the username.",
+    )
+    team = models.ForeignKey(
+        "accounts.Team",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="players",
+        help_text="Optional. A player belongs to at most one team at a time.",
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
